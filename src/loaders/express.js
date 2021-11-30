@@ -53,10 +53,12 @@ export default (app) => {
   // });
 
   app.use(response);
-
-  app.use((_req, _res, next) => {
-    const error = new Error("Endpoint could not find!");
-    error.status = 404;
-    next(error);
+  app.use((req, res, next) => {
+    response(
+      { httpCode: 404, messageCode: "endpointNotFoundError" },
+      req,
+      res,
+      next
+    );
   });
 };

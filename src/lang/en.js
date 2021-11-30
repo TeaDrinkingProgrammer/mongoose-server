@@ -5,10 +5,14 @@ class Lang {
     welcomeCode: "Client connected",
     serverStart: "Server started",
     testConnection: "Successfully connected to server",
+    endpointNotFoundError: "Endpoint not found!",
+    idNotIncludedError:
+      "Invalid request: cannot do a get request without an Id!",
   };
   objectName = " ";
   interpolatedStrings = {
     code404: `${this.objectName} does not exist`,
+    retrievalError: `${this.objectName} could not be retrieved`,
   };
 
   getString(messageCode, objectName) {
