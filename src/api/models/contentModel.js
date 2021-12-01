@@ -4,6 +4,7 @@ const { Schema, model } = mongoose;
 const contentSchema = new Schema({
   name: {
     type: String,
+    unique: [true, "Content needs to have a unique name"],
     required: true,
   },
   tags: [

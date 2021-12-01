@@ -9,10 +9,15 @@ class Lang {
     idNotIncludedError:
       "Invalid request: cannot do a get request without an Id!",
   };
-  objectName = " ";
-  interpolatedStrings = {
-    code404: `${this.objectName} does not exist`,
-    retrievalError: `${this.objectName} could not be retrieved`,
+  // objectName = " ";
+  interpolatedStrings = (messageName, objectName) => {
+    let array = {
+      code404: `${objectName} does not exist`,
+      retrievalError: `${objectName} could not be retrieved`,
+      creationError: `${objectName} could not be added`,
+      creationSuccess: `${objectName} was successfully added to the database`,
+    };
+    return array[messageName];
   };
 
   getString(messageCode, objectName) {
@@ -21,8 +26,7 @@ class Lang {
       objectName !== undefined &&
       this.interpolatedStrings[messageCode] !== null
     ) {
-      this.objectName = objectName;
-      return this.interpolatedStrings[messageCode];
+      return this.interpolatedStrings(messageCode, objectName);
     } else if (this.genericStrings[messageCode] !== null) {
       return this.genericStrings[messageCode];
     } else {

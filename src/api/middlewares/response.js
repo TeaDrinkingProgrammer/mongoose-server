@@ -4,15 +4,28 @@ export default (packet, req, res, next) => {
   logger.debug("Response middleware:");
   logger.debug("Status: ", packet.httpCode);
   logger.debug("Result: ", packet.result);
-  logger.debug("Message: ", getText(packet.messageCode));
+  let message = getText(packet.messageCode, packet.objectName);
+  logger.debug("Message: ", message);
   if (
     (packet.httpCode >= 200 && packet.httpCode < 300) ||
     packet.httpCode === undefined
   ) {
-    res.status(packet.httpCode).json(packet.result);
+    logger.debug("response: ", {
+      message: message,
+      result: packet.result,
+    });
+    res.status(packet.httpCode).json({
+      message: message,
+      result: packet.result,
+    });
   } else if (packet.httpCode >= 300 && packet.httpCode < 600) {
-    res
-      .status(packet.httpCode)
-      .json({ error: getText(packet.messageCode, packet.objectName) });
+    if (packet.error) {
+      logger.debug("Error: ", packet.error);
+      res.status(packet.httpCode).json({
+        message: message,
+      });
+    } else {
+      res.status(packet.httpCode).json({ message: message });
+    }
   }
 };
