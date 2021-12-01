@@ -16,10 +16,18 @@ export async function getContent(req, res, next) {
       });
     }
 
-    return next({
-      httpCode: 200,
-      result: content,
-    });
+    if (content === null) {
+      return next({
+        httpCode: 404,
+        messageCode: "code404",
+        objectName: "content",
+      });
+    } else {
+      return next({
+        httpCode: 200,
+        result: content,
+      });
+    }
   }
   return next({
     httpCode: 400,
@@ -45,5 +53,33 @@ export async function addContent(req, res, next) {
     messageCode: "creationSuccess",
     objectName: "content",
     result: content,
+  });
+}
+
+export async function removeContent(req, res, next) {
+  logger.debug("removeContent");
+  let content;
+  if (req.query.id) {
+    try {
+      //Use findByIdAndDelete over findByIdAndRemove: https://stackoverflow.com/questions/54081114/what-is-the-difference-between-findbyidandremove-and-findbyidanddelete-in-mongoo
+      content = await Content.findByIdAndDelete(req.query.id);
+    } catch (error) {
+      return next({
+        httpCode: 500,
+        messageCode: "deletionError",
+        objectName: "content",
+        error: error,
+      });
+    }
+    return next({
+      httpCode: 200,
+      messageCode: "deletionSuccess",
+      objectName: "content",
+      result: content,
+    });
+  }
+  return next({
+    httpCode: 400,
+    messageCode: "idNotIncludedError",
   });
 }

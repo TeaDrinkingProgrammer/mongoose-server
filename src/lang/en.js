@@ -6,8 +6,7 @@ class Lang {
     serverStart: "Server started",
     testConnection: "Successfully connected to server",
     endpointNotFoundError: "Endpoint not found!",
-    idNotIncludedError:
-      "Invalid request: cannot do a get request without an Id!",
+    idNotIncludedError: "Invalid request: cannot do request without an Id!",
   };
   // objectName = " ";
   interpolatedStrings = (messageName, objectName) => {
@@ -15,7 +14,9 @@ class Lang {
       code404: `${objectName} does not exist`,
       retrievalError: `${objectName} could not be retrieved`,
       creationError: `${objectName} could not be added`,
+      deletionError: `${objectName} could not be removed from the database`,
       creationSuccess: `${objectName} was successfully added to the database`,
+      deletionSuccess: `${objectName} was successfully removed from the database`,
     };
     return array[messageName];
   };
