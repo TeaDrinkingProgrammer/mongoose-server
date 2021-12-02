@@ -55,6 +55,43 @@ export async function addContent(req, res, next) {
     result: content,
   });
 }
+export async function updateContent(req, res, next) {
+  logger.debug("addContent");
+  let content;
+  if (req.query.id || req.body) {
+    try {
+      if (await Content.findByIdAndUpdate(req.query.id, req.body)) {
+        content = await Content.findById(req.query.id);
+      }
+    } catch (error) {
+      return next({
+        httpCode: 500,
+        messageCode: "updateError",
+        error: error,
+        objectName: "content",
+      });
+    }
+    if (content !== null) {
+      return next({
+        httpCode: 200,
+        messageCode: "updateSuccess",
+        objectName: "content",
+        result: content,
+      });
+    } else {
+      return next({
+        httpCode: 200,
+        messageCode: "updateError",
+        objectName: "content",
+        error: content,
+      });
+    }
+  }
+  return next({
+    httpCode: 400,
+    messageCode: "idAndBodyNotIncludedError",
+  });
+}
 
 export async function removeContent(req, res, next) {
   logger.debug("removeContent");
