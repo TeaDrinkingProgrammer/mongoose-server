@@ -23,6 +23,7 @@ export default (packet, req, res, next) => {
       logger.debug("Error: ", packet.error);
       res.status(packet.httpCode).json({
         message: message,
+        error: packet.error.message,
       });
     } else {
       res.status(packet.httpCode).json({ message: message });
