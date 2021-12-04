@@ -4,7 +4,7 @@ import {
   getContent,
   removeContent,
   updateContent,
-} from "./../controllers/content/contentController.js";
+} from "./../controllers/contentController.js";
 const router = Router();
 
 router.get("/", getContent);

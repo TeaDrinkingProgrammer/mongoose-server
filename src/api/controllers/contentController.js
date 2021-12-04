@@ -1,5 +1,5 @@
-import Content from "../../models/contentModel.js";
-import { get, add, update, remove } from "../genericController.js";
+import Content from "../models/content.js";
+import { get, add, update, remove } from "./genericController.js";
 
 export async function getContent(req, res, next) {
   await get(Content, "content", req, res, next);

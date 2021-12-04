@@ -9,6 +9,7 @@ class Lang {
     idNotIncludedError: "Invalid request: cannot do request without an id!",
     idAndBodyNotIncludedError:
       "Invalid request: cannot do request without an id and/or body!",
+    code500: "Internal server error",
   };
   // objectName = " ";
   interpolatedStrings = (messageName, objectName) => {

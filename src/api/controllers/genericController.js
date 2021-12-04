@@ -1,6 +1,64 @@
 import logger from "../../config/logger.js";
 
-export async function get(model, objectName, req, res, next) {
+export async function get(
+  model,
+  objectName,
+  sortOn,
+  skip,
+  limit,
+  req,
+  res,
+  next
+) {
+  logger.debug("generic get");
+  let returnItem, query;
+  try {
+    //Building the query
+    if (req.body.query) {
+      query = await model.find(req.body.query);
+    } else {
+      query = await model.find({});
+    }
+    if (!sortOn) {
+      logger.debug("Cannot call get without sort argument!");
+      return next({
+        httpCode: 500,
+        messageCode: "code500",
+        error: error,
+      });
+    }
+    if (skip) {
+      logger.debug("limit added");
+      query.skip(skip);
+    }
+    if (limit) {
+      logger.debug("limit added");
+      query.limit(limit);
+    }
+    returnItem = await query;
+  } catch (error) {
+    return next({
+      httpCode: 500,
+      messageCode: "retrievalError",
+      objectName: objectName,
+      error: error,
+    });
+  }
+
+  if (returnItem === null) {
+    return next({
+      httpCode: 404,
+      messageCode: "code404",
+      objectName: objectName,
+    });
+  } else {
+    return next({
+      httpCode: 200,
+      result: returnItem,
+    });
+  }
+}
+export async function getById(model, objectName, req, res, next) {
   logger.debug("generic get");
   let returnItem;
   if (req.query.id) {
