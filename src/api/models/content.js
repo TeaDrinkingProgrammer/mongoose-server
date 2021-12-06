@@ -49,7 +49,12 @@ const contentSchema = new Schema({
   targetLanguage: {
     type: String,
   },
-  comments: [Comment],
+  comments: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Comment",
+    },
+  ],
   user: {
     type: Schema.Types.ObjectId,
     ref: "User",
