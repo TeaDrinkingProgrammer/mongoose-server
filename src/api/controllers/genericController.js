@@ -4,28 +4,34 @@ export async function get(
   model,
   objectName,
   sortOn,
+  sortOrder,
   skip,
   limit,
-  req,
-  res,
+  body,
   next
 ) {
   logger.debug("generic get");
   let returnItem, query;
   try {
     //Building the query
-    if (req.body.query) {
-      query = await model.find(req.body.query);
+    if (body) {
+      query = model.find(body);
     } else {
-      query = await model.find({});
+      query = model.find({});
     }
-    if (!sortOn) {
-      logger.debug("Cannot call get without sort argument!");
+    //Can sort on nonexistent field
+    if (!(sortOn && sortOrder)) {
+      logger.debug("Cannot call get without sort and/or sortOrder argument!");
       return next({
         httpCode: 500,
         messageCode: "code500",
         error: error,
       });
+    } else if (sortOrder == ("asc" || "desc")) {
+      let queryObject = {};
+      queryObject[sortOn] = sortOrder;
+      logger.debug(queryObject);
+      query.sort(queryObject);
     }
     if (skip) {
       logger.debug("limit added");
@@ -58,12 +64,12 @@ export async function get(
     });
   }
 }
-export async function getById(model, objectName, req, res, next) {
+export async function getById(model, objectName, id, next) {
   logger.debug("generic get");
   let returnItem;
-  if (req.query.id) {
+  if (id) {
     try {
-      returnItem = await model.findById(req.query.id);
+      returnItem = await model.findById(id);
     } catch (error) {
       return next({
         httpCode: 500,
@@ -92,11 +98,12 @@ export async function getById(model, objectName, req, res, next) {
   });
 }
 
-export async function add(model, objectName, req, res, next) {
+export async function add(model, objectName, body, next) {
   logger.debug("generic add");
   let returnItem;
   try {
-    returnItem = await model.create(req.body);
+    returnItem = await model.create(body);
+    await model.save();
   } catch (error) {
     return next({
       httpCode: 500,
@@ -112,13 +119,14 @@ export async function add(model, objectName, req, res, next) {
     result: returnItem,
   });
 }
-export async function update(model, objectName, req, res, next) {
+export async function update(model, objectName, id, body, next) {
   logger.debug("addContent");
   let returnItem;
-  if (req.query.id || req.body) {
+  if (id || body) {
     try {
-      if (await model.findByIdAndUpdate(req.query.id, req.body)) {
-        returnItem = await model.findById(req.query.id);
+      if (await model.findByIdAndUpdate(id, body)) {
+        returnItem = await model.findById(id);
+        await model.save();
       }
     } catch (error) {
       return next({
@@ -150,13 +158,13 @@ export async function update(model, objectName, req, res, next) {
   });
 }
 
-export async function remove(model, objectName, req, res, next) {
+export async function removeById(model, objectName, id, next) {
   logger.debug("generic remove");
   let returnItem;
-  if (req.query.id) {
+  if (id) {
     try {
       //Use findByIdAndDelete over findByIdAndRemove: https://stackoverflow.com/questions/54081114/what-is-the-difference-between-findbyidandremove-and-findbyidanddelete-in-mongoo
-      returnItem = await model.findByIdAndDelete(req.query.id);
+      returnItem = await model.findByIdAndDelete(id);
     } catch (error) {
       return next({
         httpCode: 500,

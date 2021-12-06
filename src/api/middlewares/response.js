@@ -10,10 +10,6 @@ export default (packet, req, res, next) => {
     (packet.httpCode >= 200 && packet.httpCode < 300) ||
     packet.httpCode === undefined
   ) {
-    logger.debug("response: ", {
-      message: message,
-      result: packet.result,
-    });
     res.status(packet.httpCode).json({
       message: message,
       result: packet.result,
