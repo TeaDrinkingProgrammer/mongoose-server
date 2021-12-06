@@ -10,7 +10,7 @@ const contentListSchema = new Schema(
       type: String,
     },
     isPrivate: {
-      Type: Boolean,
+      type: Boolean,
       default: true,
     },
     user: {

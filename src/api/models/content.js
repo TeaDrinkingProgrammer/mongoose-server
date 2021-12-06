@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-import Comment from "./comment";
+import Comment from "./comment.js";
+import User from "./user.js";
 const { Schema, model } = mongoose;
 
 const contentSchema = new Schema({
@@ -58,6 +59,7 @@ const contentSchema = new Schema({
   user: {
     type: Schema.Types.ObjectId,
     ref: "User",
+    required: [true, "User (owner) is required to make content"],
   },
 });
 const Content = model("Content", contentSchema);
