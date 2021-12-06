@@ -62,5 +62,18 @@ const contentSchema = new Schema({
     required: [true, "User (owner) is required to make content"],
   },
 });
+// Schema.virtual("id").get(function () {
+//   return this._id.toHexString();
+// });
+
+contentSchema.set(
+  "toJSON",
+  {
+    virtuals: true,
+  },
+  "toObject",
+  { virtuals: true }
+);
+
 const Content = model("Content", contentSchema);
 export default Content;
