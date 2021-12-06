@@ -20,16 +20,20 @@ export async function get(
       query = model.find({});
     }
     //Can sort on nonexistent field
-    if (!(sortOn && sortOrder)) {
-      logger.debug("Cannot call get without sort and/or sortOrder argument!");
+    if (!sortOn) {
+      logger.error("Cannot call get without sortOn argument!");
       return next({
         httpCode: 500,
-        messageCode: "code500",
-        error: error,
+        messageCode: "sortOnNotIncluded",
       });
     } else if (sortOrder == ("asc" || "desc")) {
       let queryObject = {};
       queryObject[sortOn] = sortOrder;
+      logger.debug(queryObject);
+      query.sort(queryObject);
+    } else {
+      let queryObject = {};
+      queryObject[sortOn] = 1;
       logger.debug(queryObject);
       query.sort(queryObject);
     }
@@ -103,7 +107,6 @@ export async function add(model, objectName, body, next) {
   let returnItem;
   try {
     returnItem = await model.create(body);
-    await model.save();
   } catch (error) {
     return next({
       httpCode: 500,
@@ -126,7 +129,6 @@ export async function update(model, objectName, id, body, next) {
     try {
       if (await model.findByIdAndUpdate(id, body)) {
         returnItem = await model.findById(id);
-        await model.save();
       }
     } catch (error) {
       return next({

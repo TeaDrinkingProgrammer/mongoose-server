@@ -9,6 +9,7 @@ class Lang {
     idNotIncludedError: "Invalid request: cannot do request without an id!",
     idAndBodyNotIncludedError:
       "Invalid request: cannot do request without an id and/or body!",
+    sortOnNotIncluded: "Cannot call get without sort argument!",
     code500: "Internal server error",
   };
   // objectName = " ";
