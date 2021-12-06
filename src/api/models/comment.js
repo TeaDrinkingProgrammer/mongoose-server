@@ -18,6 +18,10 @@ const commentSchema = new Schema(
       type: String,
       required: true,
     },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
   {
     toObject: { virtuals: true }, //toObject gaat over de omzetting van mongoose object naar javascript object

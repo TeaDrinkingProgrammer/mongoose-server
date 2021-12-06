@@ -30,6 +30,17 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
+  contentLists: {
+    type: Schema.Types.ObjectId,
+    ref: "ContentList",
+  },
+  content: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Content",
+      default: [],
+    },
+  ],
 });
 
 const User = model("User", userSchema);

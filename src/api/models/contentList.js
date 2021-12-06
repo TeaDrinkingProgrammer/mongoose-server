@@ -6,6 +6,25 @@ const contentListSchema = new Schema(
       type: String,
       required: true,
     },
+    description: {
+      type: String,
+    },
+    isPrivate: {
+      Type: Boolean,
+      default: true,
+    },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    content: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Content",
+        default: [],
+      },
+    ],
   },
   {
     toObject: { virtuals: true }, //toObject gaat over de omzetting van mongoose object naar javascript object

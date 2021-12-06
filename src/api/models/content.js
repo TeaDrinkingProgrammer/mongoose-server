@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import Comment from "./comment";
 const { Schema, model } = mongoose;
 
 const contentSchema = new Schema({
@@ -47,6 +48,11 @@ const contentSchema = new Schema({
   },
   targetLanguage: {
     type: String,
+  },
+  comments: [Comment],
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
   },
 });
 const Content = model("Content", contentSchema);
