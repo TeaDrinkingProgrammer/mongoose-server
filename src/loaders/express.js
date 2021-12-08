@@ -6,6 +6,7 @@ import getText from "../lang/get-text.js";
 import response from "../api/middlewares/response.js";
 import logger from "../config/logger.js";
 import bodyParser from "body-parser";
+import cors from "cors";
 export default (app) => {
   // process.on("uncaughtException", async (error) => {
   //   // console.log(error);
@@ -34,15 +35,7 @@ export default (app) => {
   //   );
   //   next();
   // });
-  app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header(
-      "Access-Control-Allow-Headers",
-      "Origin, X-Requested-With, Content-Type, Accept"
-    );
-    res.header("Access-Control-Allow-Methods", "GET,HEAD,POST,DELETE,PUT");
-    next();
-  });
+  app.use(cors());
   app.use(prefix, routes);
 
   app.get("/", (_req, res) => {

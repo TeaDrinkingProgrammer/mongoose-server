@@ -5,10 +5,11 @@ import {
   removeContent,
   updateContent,
 } from "./../controllers/contentController.js";
+import { authoriseToken } from "../controllers/authController.js";
 const router = Router();
 
 router.get("/", getContent);
-router.post("/", addContent);
-router.delete("/", removeContent);
-router.put("/", updateContent);
+router.post("/", authoriseToken, addContent);
+router.delete("/", authoriseToken, removeContent);
+router.put("/", authoriseToken, updateContent);
 export default router;

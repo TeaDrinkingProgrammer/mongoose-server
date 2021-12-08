@@ -20,12 +20,15 @@ export async function getContent(req, res, next) {
   }
 }
 export async function addContent(req, res, next) {
+  req.body.user = req.userId;
   await add(Content, "content", req.body, next);
 }
 export async function updateContent(req, res, next) {
+  req.body.user = req.userId;
   await update(Content, "content", req.query.id, req.body, next);
 }
 export async function removeContent(req, res, next) {
+  req.body.user = req.userId;
   await removeById(Content, "content", req.query.id, next);
 }
 // export async function getContent(req, res, next) {

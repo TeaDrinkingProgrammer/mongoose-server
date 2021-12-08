@@ -6,14 +6,13 @@ const commentSchema = new Schema(
       type: String,
       required: true,
     },
-    upvote: {
-      type: Number,
-      default: 0,
-    },
-    downvote: {
-      type: Number,
-      default: 0,
-    },
+    votesCount: Number,
+    votes: [
+      {
+        userId: Schema.Types.ObjectId,
+        type: Number,
+      },
+    ],
     firstname: {
       type: String,
       required: true,
@@ -22,6 +21,11 @@ const commentSchema = new Schema(
       type: Schema.Types.ObjectId,
       ref: "User",
       required: [true, "User (owner) is required to make comment"],
+    },
+    content: {
+      type: Schema.Types.ObjectId,
+      ref: "Content",
+      required: [true, "Content reference is required to make comment"],
     },
   },
   {

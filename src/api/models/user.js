@@ -6,11 +6,6 @@ var validateEmail = function (email) {
 };
 const userSchema = new Schema(
   {
-    username: {
-      type: String,
-      unique: [true, "Content needs to have a unique name"],
-      required: true,
-    },
     email: {
       type: String,
       trim: true,
@@ -23,18 +18,25 @@ const userSchema = new Schema(
         "Please enter a valid email address",
       ],
     },
-    firstname: {
+    firstName: {
       type: String,
       required: true,
     },
-    lastname: {
+    lastName: {
       type: String,
       required: true,
     },
-    contentLists: {
-      type: Schema.Types.ObjectId,
-      ref: "ContentList",
+    password: {
+      type: String,
+      required: true,
     },
+    contentLists: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "ContentList",
+        default: [],
+      },
+    ],
     content: [
       {
         type: Schema.Types.ObjectId,
