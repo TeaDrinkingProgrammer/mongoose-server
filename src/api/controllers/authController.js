@@ -23,11 +23,17 @@ export async function login(req, res, next) {
     .compare(req.body.password, returnItem.password)
     .then((match) => {
       if (match) {
-        let token = signToken(returnItem.id);
+        returnItem = returnItem.toJSON();
+        returnItem.token = signToken(returnItem.id);
+        delete returnItem.password;
+        delete returnItem._id;
+        delete returnItem.__v;
+        delete returnItem.content;
+        delete returnItem.contentLists;
         return next({
           httpCode: 200,
           messageCode: "tokenSuccess",
-          result: token,
+          result: returnItem,
         });
       } else {
         logger.debug("Wrong username of password");
