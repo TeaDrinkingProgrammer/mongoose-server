@@ -19,37 +19,45 @@ export async function login(req, res, next) {
       objectName: "user",
     });
   }
-  bcrypt
-    .compare(req.body.password, returnItem.password)
-    .then((match) => {
-      if (match) {
-        returnItem = returnItem.toJSON();
-        returnItem.token = signToken(returnItem.id);
-        delete returnItem.password;
-        delete returnItem._id;
-        delete returnItem.__v;
-        delete returnItem.content;
-        delete returnItem.contentLists;
+  if (returnItem != null) {
+    bcrypt
+      .compare(req.body.password, returnItem.password)
+      .then((match) => {
+        if (match) {
+          returnItem = returnItem.toJSON();
+          returnItem.token = signToken(returnItem.id);
+          delete returnItem.password;
+          delete returnItem._id;
+          delete returnItem.__v;
+          delete returnItem.content;
+          delete returnItem.contentLists;
+          return next({
+            httpCode: 200,
+            messageCode: "tokenSuccess",
+            result: returnItem,
+          });
+        } else {
+          logger.debug("Wrong username of password");
+          return next({
+            httpCode: 400,
+            messageCode: "notAuthenticated",
+          });
+        }
+      })
+      .catch((error) => {
         return next({
-          httpCode: 200,
-          messageCode: "tokenSuccess",
-          result: returnItem,
+          httpCode: 500,
+          messageCode: "code500",
+          error: error,
         });
-      } else {
-        logger.debug("Wrong username of password");
-        return next({
-          httpCode: 400,
-          messageCode: "notAuthenticated",
-        });
-      }
-    })
-    .catch((error) => {
-      return next({
-        httpCode: 500,
-        messageCode: "code500",
-        error: error,
       });
+  } else {
+    return next({
+      httpCode: 404,
+      messageCode: "code404",
+      objectName: "user",
     });
+  }
 }
 
 export async function register(req, res, next) {
@@ -100,6 +108,7 @@ export async function authoriseToken(req, res, next) {
   logger.info(`[AuthenticationController] validateToken`);
   // The headers should contain the authorization-field with value 'Bearer [token]'
   const authHeader = req.headers.authorization;
+  logger.debug("Header: ", req.headers.authorization);
   if (!authHeader) {
     logger.warn("Authorization header missing!");
     return next({

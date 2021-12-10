@@ -2,21 +2,17 @@ import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 const commentSchema = new Schema(
   {
-    comment_text: {
+    commentText: {
       type: String,
       required: true,
     },
-    votesCount: Number,
     votes: [
       {
         userId: Schema.Types.ObjectId,
-        type: Number,
+        type: String,
+        default: [],
       },
     ],
-    firstname: {
-      type: String,
-      required: true,
-    },
     user: {
       type: Schema.Types.ObjectId,
       ref: "User",
@@ -34,9 +30,8 @@ const commentSchema = new Schema(
     timestamps: true,
   }
 );
-commentSchema.virtual("karma").get(function () {
-  //this verwijst naar het document. this in js is dynamisch met deze notatie (this verwijst dan naar aanroeper van de functie), met fat arrow is ie statisch
-  return this.upvote - downvote;
+commentSchema.virtual("votesCount").get(function () {
+  return this.votes.length;
 });
 const Comment = model("Comment", commentSchema);
 export default Comment;

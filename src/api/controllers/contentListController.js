@@ -6,6 +6,9 @@ export async function getContentList(req, res, next) {
     await getById(ContentList, "contentList", req.query.id, next);
   } else {
     let sortOn = req.query.sortOn ? req.query.sortOn : "name";
+    if (req.query.userId) {
+      req.body.userId = req.query.userId;
+    }
     await get(
       ContentList,
       "contentList",

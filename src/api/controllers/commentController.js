@@ -6,6 +6,9 @@ export async function getComment(req, res, next) {
   if (req.query.id) {
     await getById(Comment, "comment", req.query.id, next);
   } else {
+    if (req.query.contentId) {
+      req.body.content = req.query.contentId;
+    }
     let sortOn = req.query.sortOn ? req.query.sortOn : "karma";
     await get(
       Comment,
@@ -26,11 +29,11 @@ export async function addComment(req, res, next) {
   await add(Comment, "comment", req.body, next);
 }
 export async function updateComment(req, res, next) {
-  req.body.user = req.userId;
+  // req.body.user = req.userId;
   await update(Comment, "comment", req.query.id, req.body, next);
 }
 export async function removeComment(req, res, next) {
-  req.body.user = req.userId;
+  // req.body.user = req.userId;
   await removeById(Comment, "comment", req.query.id, next);
 }
 

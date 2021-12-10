@@ -75,5 +75,12 @@ contentSchema.set(
   { virtuals: true }
 );
 
+contentSchema.pre("remove", async function (next) {
+  const contentList = mongoose.Model("ContentList");
+  const comment = mongoose.Model("Model");
+  await contentList.updateMany({}, { $pull: { content: this._id } });
+  await comment.updateMany({}, { $pull: { content: this._id } });
+  next();
+});
 const Content = model("Content", contentSchema);
 export default Content;
