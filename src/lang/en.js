@@ -11,6 +11,10 @@ class Lang {
       "Invalid request: cannot do request without an id and/or body!",
     sortOnNotIncluded: "Cannot call get without sort argument!",
     code500: "Internal server error",
+    tokenSuccess: "Token was successfully generated",
+    notAuthenticated: "Wrong username or password",
+    tokenMissing: "Authorization header is missing!",
+    tokenNotAuthorised: "The user is not authorised or the token is expired.",
   };
   // objectName = " ";
   interpolatedStrings = (messageName, objectName) => {

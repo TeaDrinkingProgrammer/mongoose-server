@@ -6,6 +6,9 @@ export async function getContentList(req, res, next) {
     await getById(ContentList, "contentList", req.query.id, next);
   } else {
     let sortOn = req.query.sortOn ? req.query.sortOn : "name";
+    if (req.query.userId) {
+      req.body.userId = req.query.userId;
+    }
     await get(
       ContentList,
       "contentList",
@@ -20,11 +23,14 @@ export async function getContentList(req, res, next) {
   }
 }
 export async function addContentList(req, res, next) {
+  req.body.user = req.userId;
   await add(ContentList, "contentList", req.body, next);
 }
 export async function updateContentList(req, res, next) {
+  req.body.user = req.userId;
   await update(ContentList, "contentList", req.query.id, req.body, next);
 }
 export async function removeContentList(req, res, next) {
+  req.body.user = req.userId;
   await removeById(ContentList, "contentList", req.query.id, next);
 }

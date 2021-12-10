@@ -124,8 +124,9 @@ export async function add(model, objectName, body, next) {
 }
 export async function update(model, objectName, id, body, next) {
   logger.debug("addContent");
+  logger.debug("update body:", body);
   let returnItem;
-  if (id || body) {
+  if (id && body) {
     try {
       if (await model.findByIdAndUpdate(id, body)) {
         returnItem = await model.findById(id);

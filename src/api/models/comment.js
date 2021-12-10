@@ -2,26 +2,26 @@ import mongoose from "mongoose";
 const { Schema, model } = mongoose;
 const commentSchema = new Schema(
   {
-    comment_text: {
+    commentText: {
       type: String,
       required: true,
     },
-    upvote: {
-      type: Number,
-      default: 0,
-    },
-    downvote: {
-      type: Number,
-      default: 0,
-    },
-    firstname: {
-      type: String,
-      required: true,
-    },
+    votes: [
+      {
+        userId: Schema.Types.ObjectId,
+        type: String,
+        default: [],
+      },
+    ],
     user: {
       type: Schema.Types.ObjectId,
       ref: "User",
       required: [true, "User (owner) is required to make comment"],
+    },
+    content: {
+      type: Schema.Types.ObjectId,
+      ref: "Content",
+      required: [true, "Content reference is required to make comment"],
     },
   },
   {
@@ -30,9 +30,8 @@ const commentSchema = new Schema(
     timestamps: true,
   }
 );
-commentSchema.virtual("karma").get(function () {
-  //this verwijst naar het document. this in js is dynamisch met deze notatie (this verwijst dan naar aanroeper van de functie), met fat arrow is ie statisch
-  return this.upvote - downvote;
+commentSchema.virtual("votesCount").get(function () {
+  return this.votes.length;
 });
 const Comment = model("Comment", commentSchema);
 export default Comment;
