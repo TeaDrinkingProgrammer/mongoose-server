@@ -20,9 +20,6 @@ export async function getUser(req, res, next) {
     );
   }
 }
-export async function addUser(req, res, next) {
-  await add(User, "user", req.body, next);
-}
 export async function updateUser(req, res, next) {
   await update(User, "user", req.query.id, req.body, next);
 }
