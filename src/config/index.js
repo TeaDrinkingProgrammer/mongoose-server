@@ -4,18 +4,12 @@ config();
 //NOTE: If you are running the project in an instance, you should store these secret keys in its configuration settings.
 // This type of storing secret information is only experimental and for the purpose of local running.
 
-const {
-  DB_URI,
-  PORT,
-  JWT_SECRET_KEY,
-  REFRESH_TOKEN_SECRET_KEY,
-  AWS_ACCESS_KEY_ID,
-  AWS_SECRET_ACCESS_KEY,
-  AWS_REGION,
-  BUCKET_NAME,
-} = process.env;
+export const env = process.env;
 
-export const port = PORT || 3000;
-export const jwtSecretKey = JWT_SECRET_KEY;
-export const dbUri = DB_URI;
+env.PORT = env.PORT || 3000;
+env.NEO4J_URL = env.NEO4J_URL || 'bolt://localhost:7687'
+env.NEO4J_USER = env.NEO4J_USER || 'neo4j';
+env.NEO4J_PASSWORD = env.NEO4J_PASSWORD || 'secret';
+env.NEO4J_DBNAME = env.NEO4J_DBNAME || "neo4j";
+
 export const prefix = "/api";

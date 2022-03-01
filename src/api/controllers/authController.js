@@ -1,8 +1,9 @@
 import User from "../models/user.js";
-import { jwtSecretKey } from "../../config/index.js";
+import { env } from "../../config/index.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import logger from "../../config/logger.js";
+import { getSession } from "../../loaders/neo4j.js";
 
 export async function login(req, res, next) {
   logger.debug("get user");
@@ -73,6 +74,7 @@ export async function register(req, res, next) {
     } else if (hash) {
       logger.debug("Password has been hashed");
       try {
+        //Create new user
         returnItem = await User.create({
           email: req.body.email,
           password: hash,
@@ -80,11 +82,30 @@ export async function register(req, res, next) {
           lastName: req.body.lastName,
         });
       } catch (error) {
-        logger.error("User does not exist");
+        return next({
+          httpCode: 400,
+          messageCode: "alreadyExists",
+          objectName: "User",
+          error: error,
+        });
+      }
+      try {
+        //If user is created in Mongo, add userid as node in Neo4j
+        let session = getSession()
+        let neoQuery = await session.run('MERGE (:User{_id: $id })',
+        {id: returnItem.id})
+      } catch (error) {
+        //If there is a Neo4j error, the user is deleted in Mongodb.
+        try {
+          //Use findByIdAndDelete over findByIdAndRemove: https://stackoverflow.com/questions/54081114/what-is-the-difference-between-findbyidandremove-and-findbyidanddelete-in-mongoo
+          returnItem = await User.findByIdAndDelete(returnItem.id);
+        } catch (error2) {
+          //If that goes wrong... Well, I've tried
+          error = error + "\n error2:" + error2
+        }
         return next({
           httpCode: 500,
-          messageCode: "code404",
-          objectName: "user",
+          messageCode: "code500",
           error: error,
         });
       }
@@ -101,7 +122,6 @@ export async function register(req, res, next) {
         result: returnItem,
       });
     }
-    logger.error("This shouldn't happen");
   });
 }
 export async function authoriseToken(req, res, next) {
@@ -119,7 +139,7 @@ export async function authoriseToken(req, res, next) {
     // Strip the word 'Bearer ' from the headervalue
     const token = authHeader.substring(7, authHeader.length);
 
-    jwt.verify(token, jwtSecretKey, (err, payload) => {
+    jwt.verify(token, env.JWT_SECRET_KEY, (err, payload) => {
       if (err) {
         logger.warn("Not authorised", err);
         next({
@@ -138,7 +158,7 @@ export async function authoriseToken(req, res, next) {
   }
 }
 function signToken(id) {
-  return jwt.sign({ id }, jwtSecretKey, {
+  return jwt.sign({ id }, env.JWT_SECRET_KEY, {
     expiresIn: "5h",
   });
 }

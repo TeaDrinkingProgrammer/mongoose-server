@@ -20,6 +20,7 @@ class Lang {
   interpolatedStrings = (messageName, objectName) => {
     let array = {
       code404: `${objectName} does not exist`,
+      alreadyExists: `${objectName} already exists`,
       retrievalError: `${objectName} could not be retrieved`,
       creationError: `${objectName} could not be added`,
       deletionError: `${objectName} could not be removed from the database`,
