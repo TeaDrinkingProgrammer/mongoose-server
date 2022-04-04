@@ -9,6 +9,7 @@ class Lang {
     idNotIncludedError: "Invalid request: cannot do request without an id!",
     idAndBodyNotIncludedError:
       "Invalid request: cannot do request without an id and/or body!",
+    passwordNotIncluded: "The password was not included in the request",
     sortOnNotIncluded: "Cannot call get without sort argument!",
     code500: "Internal server error",
     tokenSuccess: "Token was successfully generated",

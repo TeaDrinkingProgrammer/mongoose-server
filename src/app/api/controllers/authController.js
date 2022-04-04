@@ -63,66 +63,75 @@ export async function login(req, res, next) {
 
 export async function register(req, res, next) {
   let returnItem;
-  bcrypt.hash(req.body.password, 10, async (error, hash) => {
-    if (error) {
-      logger.error("hashing error", error);
-      return next({
-        httpCode: 500,
-        messageCode: "code500",
-        result: token,
-      });
-    } else if (hash) {
-      logger.debug("Password has been hashed");
-      try {
-        //Create new user
-        returnItem = await User.create({
-          email: req.body.email,
-          password: hash,
-          firstName: req.body.firstName,
-          lastName: req.body.lastName,
-        });
-      } catch (error) {
-        return next({
-          httpCode: 400,
-          messageCode: "alreadyExists",
-          objectName: "User",
-          error: error,
-        });
-      }
-      try {
-        //If user is created in Mongo, add userid as node in Neo4j
-        let session = getSession()
-        let neoQuery = await session.run('MERGE (:User{_id: $id })',
-        {id: returnItem.id})
-      } catch (error) {
-        //If there is a Neo4j error, the user is deleted in Mongodb.
-        try {
-          //Use findByIdAndDelete over findByIdAndRemove: https://stackoverflow.com/questions/54081114/what-is-the-difference-between-findbyidandremove-and-findbyidanddelete-in-mongoo
-          returnItem = await User.findByIdAndDelete(returnItem.id);
-        } catch (error2) {
-          //If that goes wrong... Well, I've tried
-          error = error + "\n reverting user has failed, please contact the administrator:" + error2
-        }
+  if(req.body.password !== undefined){
+    bcrypt.hash(req.body.password, 10, async (error, hash) => {
+      if (error) {
+        logger.error("hashing error", error);
         return next({
           httpCode: 500,
           messageCode: "code500",
-          error: error,
+          result: token,
+        });
+      } else if (hash) {
+        logger.debug("Password has been hashed");
+        try {
+          //Create new user
+          returnItem = await User.create({
+            email: req.body.email,
+            password: hash,
+            firstName: req.body.firstName,
+            lastName: req.body.lastName,
+          });
+        } catch (error) {
+          return next({
+            httpCode: 400,
+            messageCode: "alreadyExists",
+            objectName: "User",
+            error: error,
+          });
+        }
+        try {
+          //If user is created in Mongo, add userid as node in Neo4j
+          let session = getSession()
+          let neoQuery = await session.run('MERGE (:User{_id: $id })',
+          {id: returnItem.id})
+        } catch (error) {
+          //If there is a Neo4j error, the user is deleted in Mongodb.
+          try {
+            //Use findByIdAndDelete over findByIdAndRemove: https://stackoverflow.com/questions/54081114/what-is-the-difference-between-findbyidandremove-and-findbyidanddelete-in-mongoo
+            returnItem = await User.findByIdAndDelete(returnItem.id);
+          } catch (error2) {
+            //If that goes wrong... Well, I've tried
+            error = error + "\n reverting user has failed, please contact the administrator:" + error2
+          }
+          return next({
+            httpCode: 500,
+            messageCode: "code500",
+            error: error,
+          });
+        }
+        returnItem = returnItem.toJSON();
+        returnItem.token = signToken(returnItem.id);
+        delete returnItem.password;
+        delete returnItem._id;
+        delete returnItem.__v;
+        delete returnItem.content;
+        delete returnItem.contentLists;
+        return next({
+          httpCode: 201,
+          messageCode: "tokenSuccess",
+          result: returnItem,
         });
       }
-      returnItem = returnItem.toJSON();
-      returnItem.token = signToken(returnItem.id);
-      delete returnItem.password;
-      delete returnItem._id;
-      delete returnItem.__v;
-      delete returnItem.content;
-      delete returnItem.contentLists;
-      return next({
-        httpCode: 200,
-        messageCode: "tokenSuccess",
-        result: returnItem,
-      });
-    }
-  });
+    });
+  } else {
+    return next({
+      httpCode: 400,
+      messageCode: "passwordNotIncluded",
+      result: token,
+    });
+  }
+  
 }
 export async function authoriseToken(req, res, next) {
   logger.info(`[AuthenticationController] validateToken`);

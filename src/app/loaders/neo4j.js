@@ -20,7 +20,7 @@ export async function connectToNeo() {
 
 async function connect() {
 	driver = neo4j.driver(
-		env.NEO4J_URL,
+		env.NEO4J_URI,
 		neo4j.auth.basic(env.NEO4J_USER, env.NEO4J_PASSWORD),
 		{ disableLosslessIntegers: true }
 	)
@@ -28,8 +28,8 @@ async function connect() {
 }
 
 export function getSession() {
-	return driver.session({
-		database: env.NEO4J_DBNAME,
-		defaultAccessMode: neo4j.session.WRITE,
-	})
+		return driver.session({
+			database: env.NEO4J_DBNAME,
+			defaultAccessMode: neo4j.session.WRITE,
+		})
 }

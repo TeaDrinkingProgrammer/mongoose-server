@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { env } from "../config/index.js"
 import logger from "../config/logger.js";
 
-export default async () => {
+export const loadMongoose = async () => {
   await mongoose
     .connect( env.MONGO_URI)
     .then(() => {
