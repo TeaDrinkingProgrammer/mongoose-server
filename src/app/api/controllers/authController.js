@@ -101,7 +101,7 @@ export async function register(req, res, next) {
           returnItem = await User.findByIdAndDelete(returnItem.id);
         } catch (error2) {
           //If that goes wrong... Well, I've tried
-          error = error + "\n error2:" + error2
+          error = error + "\n reverting user has failed, please contact the administrator:" + error2
         }
         return next({
           httpCode: 500,
