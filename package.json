@@ -25,7 +25,7 @@
   },
   "scripts": {
     "start": "node src/app/app.js",
-    "test": "mocha \"src/test/**/*.spec.js\" --recursive --reporter min --exit"
+    "test": "mocha \"src/test/**/*.spec.js\" --recursive --reporter min --exit --require \"src/test/envSetup.js\""
   },
   "author": "",
   "license": "ISC"

@@ -18,7 +18,7 @@ export async function login(req, res, next) {
     return next({
       httpCode: 400,
       messageCode: "isMissingCode400",
-      objectName: "email or password"
+      objectName: "The email and/or password"
     });
   }
   logger.debug("get user");
