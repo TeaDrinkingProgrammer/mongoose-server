@@ -4,8 +4,23 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import logger from "../../config/logger.js";
 import { getSession } from "../../loaders/neo4j.js";
+import { IsEmptyOrUndefined } from "../../helpers/emptyBodyCheck.js";
 
 export async function login(req, res, next) {
+  if(IsEmptyOrUndefined(req.body)){
+    return next({
+      httpCode: 400,
+      messageCode: "isMissingCode400",
+      objectName: "Request body"
+    });
+  }
+  if(req.body.email === undefined || req.body.password === undefined){
+    return next({
+      httpCode: 400,
+      messageCode: "isMissingCode400",
+      objectName: "email or password"
+    });
+  }
   logger.debug("get user");
   let returnItem;
   try {
@@ -62,6 +77,13 @@ export async function login(req, res, next) {
 }
 
 export async function register(req, res, next) {
+  if(IsEmptyOrUndefined(req.body)){
+    return next({
+      httpCode: 400,
+      messageCode: "isMissingCode400",
+      objectName: "Request body"
+    });
+  }
   let returnItem;
   if(req.body.password !== undefined){
     bcrypt.hash(req.body.password, 10, async (error, hash) => {
@@ -127,8 +149,7 @@ export async function register(req, res, next) {
   } else {
     return next({
       httpCode: 400,
-      messageCode: "passwordNotIncluded",
-      result: token,
+      messageCode: "passwordNotIncluded"
     });
   }
   
@@ -152,7 +173,7 @@ export async function authoriseToken(req, res, next) {
       if (err) {
         logger.warn("Not authorised", err);
         next({
-          message: "tokenNotAuthorised",
+          messageCode: "tokenNotAuthorised",
           status: 401,
         });
       }
