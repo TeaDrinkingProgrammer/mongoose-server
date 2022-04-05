@@ -22,5 +22,14 @@ describe("Authentication", () => {
         const user = await User.findOne({email: testUser1.email})
         console.log("response: ", response)
         response.should.have.status(201)
+        response.body.message.should.equal("Token was successfully generated")
+        const testuserresponse = testUser1
+        delete testuserresponse.password
+        response.body.result.should.include({
+            ...testuserresponse,
+
+        })
+        response.body.result.id.should.equal(user.id)
+        user.should.include({...testUser1})
     })
 })
