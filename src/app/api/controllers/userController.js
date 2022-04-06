@@ -33,13 +33,11 @@ export async function followUser(req, res, next) {
 		let user1IdExists = await idExists(user1Id,next)
 		let user2IdExists = await idExists(user2Id,next)
 		if (user1IdExists && user2IdExists) {
-			let neoQuery
 			try {
-				neoQuery = await session.run('MATCH (user1:User{_id: $user1Id}) MATCH (user2:User{_id: $user2Id}) MERGE (user1)-[:FOLLOWS]-(user2)', {
+				await session.run('MATCH (user1:User{_id: $user1Id}) MATCH (user2:User{_id: $user2Id}) MERGE (user1)-[:FOLLOWS]-(user2)', {
 					user1Id: user1Id,
 					user2Id: user2Id
 				})
-				console.log(neoQuery)
 			} catch (error) {
 				return next({
 					httpCode: 404,
