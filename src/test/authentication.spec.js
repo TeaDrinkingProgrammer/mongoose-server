@@ -2,19 +2,12 @@ import requester from "./testSetup.spec.js";
 import User from "../app/api/models/user.js"
 import jwt from "jsonwebtoken";
 import { getSession } from "../app/loaders/neo4j.js";
-//Arrange
-
-const testUser2 = {
-    email: "henkdesteen@gmail.com",
-    firstName: "Henk",
-    lastName: "de Steen",
-    password: "Passwistle7476("
-}
 const userEndpoint = "/api/auth"
+export const registerEndpoint = userEndpoint + "/register"
+const loginEndpoint = userEndpoint + "/login"
 describe("Authentication", () => {
     describe("Register", () => {
-        const registerEndpoint = userEndpoint + "/register"
-        it("Should return a valid response a user, when given a valid user", async function () {
+        it("Should return a valid response, when given a valid user", async function () {
             //Arrange
             const testUser = {
                 email: "janjanssen@gmail.com",
@@ -73,7 +66,6 @@ describe("Authentication", () => {
     }),
 
     describe("Login", () => { 
-        const loginEndpoint = userEndpoint + "/login"
         it("Should return a valid response, when given a valid user", async function () {
             //Arrange
             const encryptedPassword ="$2b$10$CDbKz5jwue/4zGYj5/s9hORkbLNFFlBdAzqJnuNSLSqBM70.VIgNS"

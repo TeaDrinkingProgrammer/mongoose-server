@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import logger from "../../config/logger.js";
 import { getSession } from "../../loaders/neo4j.js";
-import { IsEmptyOrUndefined } from "../../helpers/emptyBodyCheck.js";
+import { IsEmptyOrUndefined, signToken } from "../../helpers/helperMethods.js";
 
 export async function login(req, res, next) {
   if(IsEmptyOrUndefined(req.body)){
@@ -91,8 +91,7 @@ export async function register(req, res, next) {
         logger.error("hashing error", error);
         return next({
           httpCode: 500,
-          messageCode: "code500",
-          result: token,
+          messageCode: "code500"
         });
       } else if (hash) {
         logger.debug("Password has been hashed");
@@ -187,8 +186,4 @@ export async function authoriseToken(req, res, next) {
     });
   }
 }
-function signToken(id) {
-  return jwt.sign({ id }, env.JWT_SECRET_KEY, {
-    expiresIn: "5h",
-  });
-}
+

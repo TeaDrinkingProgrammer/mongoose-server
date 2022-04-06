@@ -24,9 +24,18 @@ export async function getComment(req, res, next) {
   }
 }
 export async function addComment(req, res, next) {
+  
   //TODO add id here and in other controllers
   req.body.user = req.userId;
-  await add(Comment, "comment", req.body, next);
+  await add(Comment, "comment", req.body, next, (body,next) =>{
+    if(body.commentText === undefined || body.user === undefined|| body.content === undefined){
+      return next({
+        httpCode: 400,
+        messageCode: "isMissingCode400",
+        objectName: "The commentText, user and/or content"
+      });
+    }
+  });
 }
 export async function updateComment(req, res, next) {
   // req.body.user = req.userId;

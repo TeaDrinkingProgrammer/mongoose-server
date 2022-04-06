@@ -1,4 +1,5 @@
 import logger from "../../config/logger.js";
+import { IsEmptyOrUndefined, uppercaseFirstChar } from "../../helpers/helperMethods.js";
 
 export async function get(
   model,
@@ -102,7 +103,19 @@ export async function getById(model, objectName, id, next) {
   });
 }
 
-export async function add(model, objectName, body, next) {
+export async function add(model, objectName, body, next,validationFunction) {
+  let bodyWithoutUser =  JSON.parse(JSON.stringify(body));
+  delete bodyWithoutUser.user
+  if(IsEmptyOrUndefined(bodyWithoutUser)){
+    return next({
+      httpCode: 400,
+      messageCode: "isMissingCode400",
+      objectName: "Request body"
+    });
+  }
+  if(validationFunction){
+    validationFunction(body,next)
+  }
   logger.debug("generic add");
   let returnItem;
   try {
@@ -115,8 +128,11 @@ export async function add(model, objectName, body, next) {
       objectName: objectName,
     });
   }
+  delete returnItem._id;
+  delete returnItem.__v;
+  objectName = uppercaseFirstChar(objectName)
   return next({
-    httpCode: 200,
+    httpCode: 201,
     messageCode: "creationSuccess",
     objectName: objectName,
     result: returnItem,
