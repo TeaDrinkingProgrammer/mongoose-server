@@ -1,4 +1,4 @@
-import tracer from "tracer";
+import tracer from 'tracer'
 
-let logger = tracer.colorConsole();
-export default logger;
+let logger = tracer.colorConsole()
+export default logger

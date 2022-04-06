@@ -13,7 +13,8 @@
   },
   "devDependencies": {
     "chai": "^4.3.6",
-    "chai-http": "^4.3.0"
+    "chai-http": "^4.3.0",
+    "eslint": "^8.12.0"
   },
   "type": "module",
   "name": "mongo-server",
@@ -25,7 +26,9 @@
   },
   "scripts": {
     "start": "node src/app/app.js",
-    "test": "mocha \"src/test/**/*.spec.js\" --recursive --reporter min --exit --require \"src/test/envSetup.js\""
+    "test": "mocha \"src/test/**/*.spec.js\" --recursive --reporter min --exit --require \"src/test/envSetup.js\"",
+    "lint": "eslint src --ext .js",
+    "lint:fix": "npm run lint -- --fix"
   },
   "author": "",
   "license": "ISC"

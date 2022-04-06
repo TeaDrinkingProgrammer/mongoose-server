@@ -1,19 +1,19 @@
-import logger from "../config/logger.js";
-import { env } from "../config/index.js"
-import neo4j from 'neo4j-driver';
-let driver;
+import logger from '../config/logger.js'
+import { env } from '../config/index.js'
+import neo4j from 'neo4j-driver'
+let driver
 export async function connectToNeo() {
 	try {
 		if (env.NODE_ENV !== 'test') {
 			await connect()
-			console.info('Connected to Neo4j DB')
+			logger.info('Connected to Neo4j DB')
 		} else {
 			await connect()
-			console.info('Connected to Neo4j test DB')
+			logger.info('Connected to Neo4j test DB')
 		}
 	} catch (err) {
-		console.warn('Failed to connect to Neo4j database, will try again in 6 seconds')
-		console.error('Error: ',err)
+		logger.warn('Failed to connect to Neo4j database, will try again in 6 seconds')
+		logger.error('Error: ',err)
 		setTimeout(connectToNeo,6000)
 	}
 }
@@ -28,8 +28,8 @@ async function connect() {
 }
 
 export function getSession() {
-		return driver.session({
-			database: env.NEO4J_DBNAME,
-			defaultAccessMode: neo4j.session.WRITE,
-		})
+	return driver.session({
+		database: env.NEO4J_DBNAME,
+		defaultAccessMode: neo4j.session.WRITE,
+	})
 }
