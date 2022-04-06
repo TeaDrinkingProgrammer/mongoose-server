@@ -1,6 +1,7 @@
 import logger from '../../config/logger.js'
 import getText from '../../lang/get-text.js'
-export default (packet, req, res) => {
+// eslint-disable-next-line no-unused-vars
+export default (packet, _req, res, _next) => {
 	packet.httpCode = packet.httpCode === undefined ? 500 : packet.httpCode
 	packet.messageCode = packet.messageCode === undefined ? 'code500' : packet.messageCode
 	logger.debug('Response middleware:')

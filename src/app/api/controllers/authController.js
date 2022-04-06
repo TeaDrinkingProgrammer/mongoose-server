@@ -169,22 +169,38 @@ export async function authoriseToken(req, res, next) {
 		// Strip the word 'Bearer ' from the headervalue
 		const token = authHeader.substring(7, authHeader.length)
 
-		jwt.verify(token, env.JWT_SECRET_KEY, (err, payload) => {
-			if (err) {
-				logger.warn('Not authorised', err)
-				next({
-					messageCode: 'tokenNotAuthorised',
-					status: 401,
-				})
-			}
-			if (payload) {
-				logger.debug('Token is valid', payload)
-				// User heeft toegang. Voeg UserId uit payload toe aan
-				// request, voor ieder volgend endpoint.
-				req.userId = payload.id
-				next()
-			}
-		})
+		// jwt.verify(token, env.JWT_SECRET_KEY, function (err, payload) {
+		// 	if (err) {
+		// 		logger.warn('Not authorised', err)
+		// 		return next({
+		// 			messageCode: 'tokenNotAuthorised',
+		// 			status: 401,
+		// 		})
+		// 	}
+		// 	if (payload) {
+		// 		logger.debug('Token is valid', payload)
+		// 		// User heeft toegang. Voeg UserId uit payload toe aan
+		// 		// request, voor ieder volgend endpoint.
+		// 		req.userId = payload.id
+		// 		next()
+		// 	}
+		// })
+		let payload
+		try {
+			payload = jwt.verify(token, env.JWT_SECRET_KEY)
+		} catch (error) { 
+			logger.warn('Not authorised', error)
+			return next({
+				messageCode: 'tokenNotAuthorised',
+				httpCode: 401,
+			})
+		}
+		logger.debug('Token is valid', payload)
+		// User heeft toegang. Voeg UserId uit payload toe aan
+		// request, voor ieder volgend endpoint.
+		req.userId = payload.id
+		next()
+
 	}
 }
 

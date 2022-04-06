@@ -78,6 +78,32 @@ describe('Comment',() => {
 			//Assert
 			response.should.have.status(400)
 			response.body.message.should.equal('The commentText, user and/or content was missing in the request')
+		}),
+		it('Should return an error, when sending request without token', async function () {
+			//Arrange
+			const testComment = {
+				commentText: 'Lorem ipsum',
+				user: userId,
+				content:  contentId
+			}
+			//Act
+			const response = await requester.post(commentEndpoint).send(testComment)
+			//Assert
+			response.should.have.status(401)
+			response.body.message.should.equal('Authorization header is missing!')
+		}),
+		it('Should return an error, when sending invalid token', async function () {
+			//Arrange
+			const testComment = {
+				commentText: 'Lorem ipsum',
+				user: userId,
+				content:  contentId
+			}
+			//Act
+			const response = await requester.post(commentEndpoint).set('authorization', 'Bearer ' + 'eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1ZXIiLCJVc2VybmFtZSI6IkphdmFJblVzZSIsImV4cCI6MTY0OTI1MTMyNywiaWF0IjoxNjQ5MjUxMzI3fQ.xnLlsEb3LX--ni8OI-zX_FecDGB7nUC2QHw6gopRQSo').send(testComment)
+			//Assert
+			response.should.have.status(401)
+			response.body.message.should.equal('The user is not authorised or the token is expired.')
 		})
 	})
 	// describe("Get Comment",() => {
