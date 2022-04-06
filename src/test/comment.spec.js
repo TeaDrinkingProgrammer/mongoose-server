@@ -140,32 +140,27 @@ describe('Comment',() => {
 			const returnItem = await Comment.create(testComment)
 			const commentId = returnItem.id
 			//Act
-			const response = await requester.get(commentEndpoint + '?id=' + commentId).set('authorization', 'Bearer ' + token)
+			const response = await requester.get(commentEndpoint + '?id=' + commentId)
 			//Assert
 			response.should.have.status(200)
 			response.body.message.should.equal('Comment was successfully retrieved')
 			response.body.result.commentText.should.equal(testComment.commentText)
 			response.body.result.votes.should.have.lengthOf(1)
 			response.body.result.content.should.equal(testComment.content)
+		}),
+		it('Should return an error, when sent a non-existant id', async function () {
+			//Act
+			const response = await requester.get(commentEndpoint + '?id=' + '439jGH456f')
+			//Assert
+			response.should.have.status(500)
+			response.body.message.should.equal('Comment could not be retrieved')
+		}),
+		it('Should return an error, when not sending id', async function () {
+			//Act
+			const response = await requester.get(commentEndpoint).set('authorization', 'Bearer ' + token)
+			//Assert
+			response.should.have.status(400)
+			response.body.message.should.equal('Invalid request: cannot do request without an id!')
 		})
-		// it('Should return an error, when sent an empty request', async function () {
-		// 	//Act
-		// 	const response = await requester.post(commentEndpoint).set('authorization', 'Bearer ' + token).send({})
-		// 	//Assert
-		// 	response.should.have.status(400)
-		// 	response.body.message.should.equal('Request body was missing in the request')
-		// })
-		// it('Should return an error, when commentText is missing', async function () {
-		// 	//Arrange
-		// 	const testComment = {
-		// 		user: userId,
-		// 		content:  contentId
-		// 	}
-		// 	//Act
-		// 	const response = await requester.post(commentEndpoint).set('authorization', 'Bearer ' + token).send(testComment)
-		// 	//Assert
-		// 	response.should.have.status(400)
-		// 	response.body.message.should.equal('The commentText, user and/or content was missing in the request')
-		// })
 	})
 })

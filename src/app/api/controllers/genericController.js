@@ -73,6 +73,7 @@ export async function getById(model, objectName, id, next) {
 	logger.debug('generic get')
 	let returnItem
 	if (id) {
+		objectName = uppercaseFirstChar(objectName)
 		try {
 			returnItem = await model.findById(id)
 		} catch (error) {
@@ -85,7 +86,6 @@ export async function getById(model, objectName, id, next) {
 		}
 		delete returnItem._id
 		delete returnItem.__v
-		objectName = uppercaseFirstChar(objectName)
 		if (returnItem === null) {
 			return next({
 				httpCode: 404,
