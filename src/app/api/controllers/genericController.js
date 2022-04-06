@@ -83,7 +83,9 @@ export async function getById(model, objectName, id, next) {
 				error: error,
 			})
 		}
-
+		delete returnItem._id
+		delete returnItem.__v
+		objectName = uppercaseFirstChar(objectName)
 		if (returnItem === null) {
 			return next({
 				httpCode: 404,
@@ -93,6 +95,8 @@ export async function getById(model, objectName, id, next) {
 		} else {
 			return next({
 				httpCode: 200,
+				messageCode: 'findByIdSuccess',
+				objectName: objectName,
 				result: returnItem,
 			})
 		}

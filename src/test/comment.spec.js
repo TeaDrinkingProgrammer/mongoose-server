@@ -2,6 +2,7 @@ import requester from './testSetup.spec.js'
 import User from '../app/api/models/user.js'
 import { signToken } from '../app/helpers/helperMethods.js'
 import Content from '../app/api/models/content.js'
+import Comment from '../app/api/models/comment.js'
 const commentEndpoint = '/api/comment'
 let token = ''
 let contentId = ''
@@ -106,41 +107,65 @@ describe('Comment',() => {
 			response.body.message.should.equal('The user is not authorised or the token is expired.')
 		})
 	})
-	// describe("Get Comment",() => {
-	//     it("Should return a valid response, when given a valid comment and token", async function () {
-	//         //Arrange
-	//         const testComment = {
-	//             commentText: 'Lorem ipsum',
-	//             user: userId,
-	//             content:  contentId
-	//         }
-	//         //Act
-	//         const response = await requester.get(commentEndpoint).set("authorization", "Bearer " + token).send(testComment)
-	//         //Assert
-	//         response.should.have.status(201)
-	//         response.body.message.should.equal("Comment was successfully added to the database")
-	//         response.body.result.commentText.should.equal(testComment.commentText)
-	//         response.body.result.votes.should.have.lengthOf(0)
-	//         response.body.result.content.should.equal(testComment.content)
-	//     })
-	//     it("Should return an error, when sent an empty request", async function () {
-	//         //Act
-	//         const response = await requester.post(commentEndpoint).set("authorization", "Bearer " + token).send({})
-	//         //Assert
-	//         response.should.have.status(400)
-	//         response.body.message.should.equal("Request body was missing in the request")
-	//     })
-	//     it("Should return an error, when commentText is missing", async function () {
-	//         //Arrange
-	//         const testComment = {
-	//             user: userId,
-	//             content:  contentId
-	//         }
-	//         //Act
-	//         const response = await requester.post(commentEndpoint).set("authorization", "Bearer " + token).send(testComment)
-	//         //Assert
-	//         response.should.have.status(400)
-	//         response.body.message.should.equal("The commentText, user and/or content was missing in the request")
-	//     })
-	// })
+	describe('Get Comment by Id',() => {
+		beforeEach(async function () {
+			// const testUser2 = {
+			// 	email: 'mariagonzales@gmail.com',
+			// 	firstName: 'Maria',
+			// 	lastName: 'Gonzales',
+			// 	password: '$2b$10$2UgJ72WXxfroJmUInWJKpey7D9qBtlcauuv.t51YIGGHlsq/qUIqm'
+			// }
+			// const returnItem = await User.create({
+			// 	...testUser2
+			// })
+			// const testComment2 = {
+			// 	commentText: 'Comment2',
+			// 	user: returnItem.id,
+			// 	content:  contentId
+			// }
+			// await Comment.create({
+			// 	testComment2
+			// })
+		})
+		it('Should return a valid response, when given a valid comment and token', async function () {
+			//Arrange
+			const testComment = {
+				commentText: 'Lorem ipsumses',
+				user: userId,
+				content:  contentId,
+				votes: [
+					userId
+				]
+			}
+			const returnItem = await Comment.create(testComment)
+			const commentId = returnItem.id
+			//Act
+			const response = await requester.get(commentEndpoint + '?id=' + commentId).set('authorization', 'Bearer ' + token)
+			//Assert
+			response.should.have.status(200)
+			response.body.message.should.equal('Comment was successfully retrieved')
+			response.body.result.commentText.should.equal(testComment.commentText)
+			response.body.result.votes.should.have.lengthOf(1)
+			response.body.result.content.should.equal(testComment.content)
+		})
+		// it('Should return an error, when sent an empty request', async function () {
+		// 	//Act
+		// 	const response = await requester.post(commentEndpoint).set('authorization', 'Bearer ' + token).send({})
+		// 	//Assert
+		// 	response.should.have.status(400)
+		// 	response.body.message.should.equal('Request body was missing in the request')
+		// })
+		// it('Should return an error, when commentText is missing', async function () {
+		// 	//Arrange
+		// 	const testComment = {
+		// 		user: userId,
+		// 		content:  contentId
+		// 	}
+		// 	//Act
+		// 	const response = await requester.post(commentEndpoint).set('authorization', 'Bearer ' + token).send(testComment)
+		// 	//Assert
+		// 	response.should.have.status(400)
+		// 	response.body.message.should.equal('The commentText, user and/or content was missing in the request')
+		// })
+	})
 })
