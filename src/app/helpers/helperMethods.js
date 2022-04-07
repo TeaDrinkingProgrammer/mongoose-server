@@ -22,3 +22,6 @@ export function cleanMongoGetRequest(returnItem){
 	delete returnItem.password
 	return returnItem
 }
+export function randomStringGen(len){
+	return [...Array(len)].map(() => Math.random().toString(36)[2]).join('')
+}

@@ -48,6 +48,7 @@ export async function get(
 		}
 		returnItem = await query
 	} catch (error) {
+		objectName = uppercaseFirstChar(objectName)
 		return next({
 			httpCode: 500,
 			messageCode: 'retrievalError',

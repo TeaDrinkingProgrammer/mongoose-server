@@ -4,7 +4,7 @@ import logger from '../config/logger.js'
 
 export const loadMongoose = async () => {
 	await mongoose
-		.connect( env.MONGO_URI)
+		.connect( env.MONGO_URI + '?serverSelectionTimeoutMS=1000')
 		.then(() => {
 			logger.debug('Mongodb Connection')
 		})
