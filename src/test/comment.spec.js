@@ -7,6 +7,7 @@ const commentEndpoint = '/api/comment'
 let token = ''
 let contentId = ''
 let userId = ''
+
 describe('Comment',() => {
 	beforeEach( async function () {
 		// unencryptedPassword = "Pasdljkflas5683*"
@@ -162,5 +163,91 @@ describe('Comment',() => {
 			response.should.have.status(400)
 			response.body.message.should.equal('Invalid request: cannot do request without an id!')
 		})
+	})
+	describe('Get all Comments',() => {
+		beforeEach(async function () {
+			// const testUser2 = {
+			// 	email: 'mariagonzales@gmail.com',
+			// 	firstName: 'Maria',
+			// 	lastName: 'Gonzales',
+			// 	password: '$2b$10$2UgJ72WXxfroJmUInWJKpey7D9qBtlcauuv.t51YIGGHlsq/qUIqm'
+			// }
+			// const returnItem = await User.create({
+			// 	...testUser2
+			// })
+			// const testComment2 = {
+			// 	commentText: 'Comment2',
+			// 	user: returnItem.id,
+			// 	content:  contentId
+			// }
+			// await Comment.create({
+			// 	testComment2
+			// })
+		})
+		it('Should return a valid response, when given a valid comment and token', async function () {
+			//Arrange
+			const testComment = {
+				commentText: 'Lorem ipsumses',
+				user: userId,
+				content:  contentId,
+				votes: [
+					userId
+				]
+			}
+			await Comment.create(testComment)
+			const testComment2 = {
+				commentText: 'Blabla',
+				user: userId,
+				content:  contentId,
+				votes: [
+					userId
+				]
+			}
+			await Comment.create(testComment2)
+			//Act
+			const response = await requester.get(commentEndpoint + '?contentId=' + contentId)
+			//Assert
+			response.should.have.status(200)
+			response.body.message.should.equal('The item(s) were successfully retrieved')
+			response.body.result.should.have.lengthOf(2)
+			
+			const testcommentArray = [
+				{
+					commentText: 'Lorem ipsumses',
+					votes: [
+						userId,
+					],
+					user: userId,
+					content: contentId,
+					votesCount: 1,
+				},
+				{
+					commentText: 'Blabla',
+					votes: [
+						userId,
+					],
+					user: userId,
+					content: contentId,
+					votesCount: 1,
+				},
+			]
+			response.body.result.should.containSubset(testcommentArray)
+			// testcommentArray.should.include.members(response.body.result)
+			console.log('great success')
+		})
+		// it('Should return an error, when sent a non-existant id', async function () {
+		// 	//Act
+		// 	const response = await requester.get(commentEndpoint + '?id=' + '439jGH456f')
+		// 	//Assert
+		// 	response.should.have.status(500)
+		// 	response.body.message.should.equal('Comment could not be retrieved')
+		// }),
+		// it('Should return an error, when not sending id', async function () {
+		// 	//Act
+		// 	const response = await requester.get(commentEndpoint).set('authorization', 'Bearer ' + token)
+		// 	//Assert
+		// 	response.should.have.status(400)
+		// 	response.body.message.should.equal('Invalid request: cannot do request without an id!')
+		// })
 	})
 })

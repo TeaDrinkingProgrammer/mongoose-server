@@ -1,5 +1,5 @@
 import logger from '../../config/logger.js'
-import { IsEmptyOrUndefined, uppercaseFirstChar } from '../../helpers/helperMethods.js'
+import { cleanMongoGetRequest, IsEmptyOrUndefined, uppercaseFirstChar } from '../../helpers/helperMethods.js'
 
 export async function get(
 	model,
@@ -63,6 +63,10 @@ export async function get(
 			objectName: objectName,
 		})
 	} else {
+		returnItem = returnItem.map(element => {
+			return cleanMongoGetRequest(element)
+		})
+
 		return next({
 			httpCode: 200,
 			messageCode: 'code200',
@@ -85,8 +89,7 @@ export async function getById(model, objectName, id, next) {
 				error: error,
 			})
 		}
-		delete returnItem._id
-		delete returnItem.__v
+		returnItem = cleanMongoGetRequest(returnItem)
 		if (returnItem === null) {
 			return next({
 				httpCode: 404,
@@ -133,8 +136,7 @@ export async function add(model, objectName, body, next,validationFunction) {
 			objectName: objectName,
 		})
 	}
-	delete returnItem._id
-	delete returnItem.__v
+	returnItem = cleanMongoGetRequest(returnItem)
 	objectName = uppercaseFirstChar(objectName)
 	return next({
 		httpCode: 201,

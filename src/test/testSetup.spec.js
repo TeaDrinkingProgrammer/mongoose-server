@@ -8,6 +8,7 @@ import ContentList from '../app/api/models/contentList.js'
 import User from '../app/api/models/user.js'
 import { before } from 'mocha'
 import logger from '../app/config/logger.js'
+import chaiSubset from 'chai-subset'
 chai.use(chaiHttp)
 const requester = chai.request(app).keepOpen()
 export default requester
@@ -32,4 +33,5 @@ beforeEach( async function () {
 })
 before(function (){
 	chai.should()
+	chai.use(chaiSubset)
 })
