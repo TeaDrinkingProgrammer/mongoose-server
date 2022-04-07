@@ -16,6 +16,9 @@ class Lang {
 		notAuthenticated: 'Wrong username or password',
 		tokenMissing: 'Authorization header is missing!',
 		tokenNotAuthorised: 'The user is not authorised or the token is expired.',
+		code200: 'The item(s) were successfully retrieved',
+		followSuccess: 'User 1 now follows user 2',
+		unfollowSuccess: 'User 1 has stopped following user 2'
 	}
 	// objectName = " ";
 	interpolatedStrings = (messageName, objectName) => {

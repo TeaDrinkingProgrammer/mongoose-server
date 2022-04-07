@@ -15,3 +15,10 @@ export function signToken(id) {
 export function uppercaseFirstChar(string) {
 	return string.charAt(0).toUpperCase() + string.slice(1)
 }
+export function cleanMongoGetRequest(returnItem){
+	returnItem = JSON.parse(JSON.stringify(returnItem))
+	delete returnItem.__v
+	delete returnItem._id
+	delete returnItem.password
+	return returnItem
+}

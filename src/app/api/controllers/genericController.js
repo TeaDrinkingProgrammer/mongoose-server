@@ -15,10 +15,10 @@ export async function get(
 	let returnItem, query
 	try {
 		//Building the query
-		if (body) {
-			query = model.find(body)
-		} else {
+		if (IsEmptyOrUndefined(body)) {
 			query = model.find({})
+		} else {
+			query = model.find(body)
 		}
 		//Can sort on nonexistent field
 		if (!sortOn) {
@@ -65,6 +65,7 @@ export async function get(
 	} else {
 		return next({
 			httpCode: 200,
+			messageCode: 'code200',
 			result: returnItem,
 		})
 	}
