@@ -5,24 +5,17 @@ export async function getContent(req, res, next) {
 	if (req.query.id) {
 		await getById(Content, 'content', req.query.id, next)
 	} else {
-		if (req.query.contentId) {
-			let sortOn = req.query.sortOn ? req.query.sortOn : 'name'
-			await get(
-				Content,
-				'content',
-				sortOn,
-				req.query.sortOrder,
-				req.query.skip,
-				req.query.limit,
-				req.body,
-				next
-			)
-		} else {
-			return next({
-				httpCode: 400,
-				messageCode: 'idNotIncludedError'
-			})
-		}
+		let sortOn = req.query.sortOn ? req.query.sortOn : 'name'
+		await get(
+			Content,
+			'content',
+			sortOn,
+			req.query.sortOrder,
+			req.query.skip,
+			req.query.limit,
+			req.body,
+			next
+		)
 	}
 }
 export async function addContent(req, res, next) {

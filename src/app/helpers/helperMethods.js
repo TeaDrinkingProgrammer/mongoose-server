@@ -20,6 +20,11 @@ export function cleanMongoGetRequest(returnItem){
 	delete returnItem.__v
 	delete returnItem._id
 	delete returnItem.password
+	if(!IsEmptyOrUndefined(returnItem.platforms)){
+		returnItem.platforms = returnItem.platforms.map(element => {
+			return cleanMongoGetRequest(element)
+		})
+	}
 	return returnItem
 }
 export function randomStringGen(len){
