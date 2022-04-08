@@ -81,7 +81,7 @@ describe('Comment',() => {
 			const response = await requester.post(commentEndpoint).set('authorization', 'Bearer ' + token).send(testComment)
 			//Assert
 			response.should.have.status(400)
-			response.body.message.should.equal('The commentText, user and/or content was missing in the request')
+			response.body.message.should.equal('The commentText, user and/or content objects are missing in the request')
 		}),
 		it('Should return an error, when sending request without token', async function () {
 			const testComment = {
@@ -317,6 +317,75 @@ describe('Comment',() => {
 		it('Should return an error, when sending invalid token', async function () {
 			const newCommentText = 'Some New Text'
 			await requestWithInvalidToken(requester.put(commentEndpoint),newCommentText )
+		})
+	})
+	describe('Delete Comment',() => {
+		it('Should return a valid response, when given a valid id and token', async function () {
+			//Arrange
+			const testComment = {
+				commentText: 'Lorem ipsumses',
+				user: userId,
+				content:  contentId,
+				votes: [
+					userId
+				]
+			}
+			const returnItem = await Comment.create(testComment)
+			const commentId = returnItem.id
+			//Act
+			const response = await requester.delete(commentEndpoint + '?id=' + commentId).set('authorization', 'Bearer ' + token)
+			//Assert
+			response.should.have.status(200)
+			response.body.message.should.equal('Comment was successfully removed from the database')
+			response.body.result.should.containSubset({
+				id: commentId
+			})
+			response.body.result.should.not.have.property('_id')
+		})
+		it('Should return an error, when sent a non-existant id', async function () {
+			//Arrange
+			const fakeId = randomStringGen(24)
+			//Act
+			const response = await requester.delete(commentEndpoint + '?id=' + fakeId).set('authorization', 'Bearer ' + token)
+			//Assert
+			response.should.have.status(500)
+			response.body.message.should.equal('Comment could not be removed from the database')
+		})
+		it('Should return an error, when not sending id', async function () {
+			//Act
+			const response = await requester.put(commentEndpoint).set('authorization', 'Bearer ' + token)
+			//Assert
+			response.should.have.status(400)
+			response.body.message.should.equal('Invalid request: cannot do request without an id and/or body!')
+		})
+		it('Should return an error, when sending request without token', async function () {
+			//Arrange
+			const testComment = {
+				commentText: 'Lorem ipsumses',
+				user: userId,
+				content:  contentId,
+				votes: [
+					userId
+				]
+			}
+			const returnItem = await Comment.create(testComment)
+			const commentId = returnItem.id
+			await requestWithoutToken(requester.delete(commentEndpoint + '?id=' + commentId))
+
+		}),
+		it('Should return an error, when sending invalid token', async function () {
+			//Arrange
+			const testComment = {
+				commentText: 'Lorem ipsumses',
+				user: userId,
+				content:  contentId,
+				votes: [
+					userId
+				]
+			}
+			const returnItem = await Comment.create(testComment)
+			const commentId = returnItem.id
+			await requestWithInvalidToken(requester.delete(commentEndpoint + '?id=' + commentId))
 		})
 	})
 })

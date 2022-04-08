@@ -21,7 +21,15 @@ export async function getContent(req, res, next) {
 }
 export async function addContent(req, res, next) {
 	req.body.user = req.userId
-	await add(Content, 'content', req.body, next)
+	await add(Content, 'content', req.body, next, (body,next) =>{
+		if(body.name === undefined || body.inProduction === undefined|| body.contentInterface === undefined|| body.contentType === undefined || body.language === undefined|| body.user === undefined){
+			return next({
+				httpCode: 400,
+				messageCode: 'objectsAreMissingCode400',
+				objectName: 'The name, inProduction, contentInterface, contentType, language and/or user'
+			})
+		}
+	})
 }
 export async function updateContent(req, res, next) {
 	req.body.user = req.userId

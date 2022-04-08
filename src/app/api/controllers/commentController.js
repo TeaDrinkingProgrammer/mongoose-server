@@ -36,7 +36,7 @@ export async function addComment(req, res, next) {
 		if(body.commentText === undefined || body.user === undefined|| body.content === undefined){
 			return next({
 				httpCode: 400,
-				messageCode: 'isMissingCode400',
+				messageCode: 'objectsAreMissingCode400',
 				objectName: 'The commentText, user and/or content'
 			})
 		}

@@ -34,6 +34,7 @@ class Lang {
 			deletionSuccess: `${objectName} was successfully removed from the database`,
 			updateSuccess: `${objectName} was successfully updated`,
 			isMissingCode400: `${objectName} was missing in the request`,
+			objectsAreMissingCode400: `${objectName} objects are missing in the request`,
 			findByIdSuccess: `${objectName} was successfully retrieved`,
 		}
 		return array[messageName]
