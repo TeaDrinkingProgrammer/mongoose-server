@@ -2,14 +2,12 @@ import requester from './testSetup.spec.js'
 import User from '../app/api/models/user.js'
 import { randomStringGen, signToken } from '../app/helpers/helperMethods.js'
 import Content from '../app/api/models/content.js'
-import Comment from '../app/api/models/comment.js'
 import { requestWithInvalidToken, requestWithoutToken} from './sharedTests.js'
 const contentEndpoint = '/api/content'
 let token = ''
-let contentId = ''
 let userId = ''
 
-describe('Content',() => {
+describe.only('Content',() => {
 	beforeEach( async function () {
 		// unencryptedPassword = "Pasdljkflas5683*"
 		// Encrypted password = $2b$10$2UgJ72WXxfroJmUInWJKpey7D9qBtlcauuv.t51YIGGHlsq/qUIqm
@@ -23,27 +21,6 @@ describe('Content',() => {
 			...testUser
 		})
 		userId = returnItem.id
-		const testContent = {
-			name: 'Language video',
-			tags: ['Spanish','Culture'],
-			inProduction: true,
-			platforms: [
-				{
-					name: 'Youtube',
-					link: 'Youtube.com',
-				}
-			],
-			contentInterface: 'video',
-			contentType: 'videos',
-			websiteLink: 'somewebsite.com',
-			language: 'English',
-			targetLanguage: 'Spanish',
-			user: returnItem.id
-		}
-		const returnItem2 = await Content.create({
-			...testContent
-		})
-		contentId = returnItem2.id
 		token = signToken(returnItem.id)
 	})
 	describe('Post Content',() => {
@@ -82,7 +59,7 @@ describe('Content',() => {
 			response.should.have.status(400)
 			response.body.message.should.equal('Request body was missing in the request')
 		}),
-		it('Should return an error, when commentText is missing', async function () {
+		it('Should return an error, when name is missing', async function () {
 			//Arrange
 			const testContent = {
 				tags: ['Portugal','Culture'],
@@ -109,6 +86,7 @@ describe('Content',() => {
 		it('Should return an error, when sending request without token', async function () {
 			//Arrange
 			const testContent = {
+				name: 'Portuguese for Beginners',
 				tags: ['Portugal','Culture'],
 				inProduction: true,
 				platforms: [
@@ -126,53 +104,73 @@ describe('Content',() => {
 			}
 			await requestWithoutToken(requester.post(contentEndpoint),testContent)
 		})
-	// 	it('Should return an error, when sending invalid token', async function () {
-	// 		const testContent = {
-	// 			commentText: 'Lorem ipsum',
-	// 			user: userId,
-	// 			content:  contentId
-	// 		}
-	// 		await requestWithInvalidToken(requester.post(contentEndpoint),testContent)
-	// 	})
+		it('Should return an error, when sending invalid token', async function () {
+			//Arrange
+			const testContent = {
+				name: 'Portuguese for Beginners',
+				tags: ['Portugal','Culture'],
+				inProduction: true,
+				platforms: [
+					{
+						name: 'Youtube',
+						link: 'Youtube.com',
+					}
+				],
+				contentInterface: 'audio',
+				contentType: 'podcast',
+				websiteLink: 'portugueseforbeginners.com',
+				language: 'English',
+				targetLanguage: 'Portuguese',
+				user: userId
+			}
+			await requestWithInvalidToken(requester.post(contentEndpoint),testContent)
+		})
 	})
-	// describe('Get Comment by Id',() => {
-	// 	it('Should return a valid response, when given a valid comment and token', async function () {
-	// 		//Arrange
-	// 		const testContent = {
-	// 			commentText: 'Lorem ipsumses',
-	// 			user: userId,
-	// 			content:  contentId,
-	// 			votes: [
-	// 				userId
-	// 			]
-	// 		}
-	// 		const returnItem = await Comment.create(testContent)
-	// 		const commentId = returnItem.id
-	// 		//Act
-	// 		const response = await requester.get(contentEndpoint + '?id=' + commentId)
-	// 		//Assert
-	// 		response.should.have.status(200)
-	// 		response.body.message.should.equal('Comment was successfully retrieved')
-	// 		response.body.result.commentText.should.equal(testContent.commentText)
-	// 		response.body.result.votes.should.have.lengthOf(1)
-	// 		response.body.result.should.not.have.property('_id')
-	// 		response.body.result.content.should.equal(testContent.content)
-	// 	}),
-	// 	it('Should return an error, when sent a non-existant id', async function () {
-	// 		//Act
-	// 		const response = await requester.get(contentEndpoint + '?id=' + '439jGH456f')
-	// 		//Assert
-	// 		response.should.have.status(500)
-	// 		response.body.message.should.equal('Comment could not be retrieved')
-	// 	}),
-	// 	it('Should return an error, when not sending id', async function () {
-	// 		//Act
-	// 		const response = await requester.get(contentEndpoint).set('authorization', 'Bearer ' + token)
-	// 		//Assert
-	// 		response.should.have.status(400)
-	// 		response.body.message.should.equal('Invalid request: cannot do request without an id!')
-	// 	})
-	// })
+	describe('Get Content by Id',() => {
+		it('Should return a valid response, when given a valid comment and token', async function () {
+			//Arrange
+			const testContent = {
+				name: 'Portuguese for Beginners',
+				tags: ['Portugal','Culture'],
+				inProduction: true,
+				platforms: [
+					{
+						name: 'Youtube',
+						link: 'Youtube.com',
+					}
+				],
+				contentInterface: 'audio',
+				contentType: 'podcast',
+				websiteLink: 'portugueseforbeginners.com',
+				language: 'English',
+				targetLanguage: 'Portuguese',
+				user: userId
+			}
+			const returnItem = await Content.create(testContent)
+			const contentId = returnItem.id
+			//Act
+			const response = await requester.get(contentEndpoint + '?id=' + contentId)
+			//Assert
+			response.should.have.status(200)
+			response.body.result.name.should.equal(testContent.name)
+			response.body.result.platforms.should.have.lengthOf(1)
+			response.body.result.should.containSubset(testContent)
+		})
+		it('Should return an error, when sent a non-existant id', async function () {
+			//Act
+			const response = await requester.get(contentEndpoint + '?id=' + '439jGH456f')
+			//Assert
+			response.should.have.status(500)
+			response.body.message.should.equal('Content could not be retrieved')
+		}),
+		it('Should return an error, when not sending id', async function () {
+			//Act
+			const response = await requester.get(contentEndpoint).set('authorization', 'Bearer ' + token)
+			//Assert
+			response.should.have.status(400)
+			response.body.message.should.equal('Invalid request: cannot do request without an id!')
+		})
+	})
 	// describe('Get all Comments',() => {
 	// 	it('Should return a valid response, when sending a request with a contentId', async function () {
 	// 		//Arrange
@@ -184,7 +182,7 @@ describe('Content',() => {
 	// 				userId
 	// 			]
 	// 		}
-	// 		await Comment.create(testContent)
+	// 		await Content.create(testContent)
 	// 		const testContent2 = {
 	// 			commentText: 'Blabla',
 	// 			user: userId,
@@ -213,7 +211,7 @@ describe('Content',() => {
 	// 				votesCount: 1,
 	// 			},
 	// 		]			
-	// 		await Comment.create(testContent2)
+	// 		await Content.create(testContent2)
 	// 		//Act
 	// 		const response = await requester.get(contentEndpoint + '?contentId=' + contentId)
 	// 		//Assert
@@ -235,7 +233,7 @@ describe('Content',() => {
 	// 				userId
 	// 			]
 	// 		}
-	// 		await Comment.create(testContent)
+	// 		await Content.create(testContent)
 	// 		const testContent2 = {
 	// 			commentText: 'Blabla',
 	// 			user: userId,
@@ -244,7 +242,7 @@ describe('Content',() => {
 	// 				userId
 	// 			]
 	// 		}
-	// 		await Comment.create(testContent2)
+	// 		await Content.create(testContent2)
 	// 		//Act
 	// 		const response = await requester.get(contentEndpoint + '?contentId=' + contentId + '&limit=' + 1)
 	// 		//Assert
@@ -263,7 +261,7 @@ describe('Content',() => {
 	// 				userId
 	// 			]
 	// 		}
-	// 		await Comment.create(testContent)
+	// 		await Content.create(testContent)
 	// 		const testContent2 = {
 	// 			commentText: 'Blabla',
 	// 			user: userId,
@@ -272,7 +270,7 @@ describe('Content',() => {
 	// 				userId
 	// 			]
 	// 		}
-	// 		await Comment.create(testContent2)
+	// 		await Content.create(testContent2)
 	// 		//Act
 	// 		const response = await requester.get(contentEndpoint)
 	// 		//Assert
@@ -307,11 +305,11 @@ describe('Content',() => {
 	// 				userId
 	// 			]
 	// 		}
-	// 		const returnItem = await Comment.create(testContent)
-	// 		const commentId = returnItem.id
+	// 		const returnItem = await Content.create(testContent)
+	// 		const contentId = returnItem.id
 	// 		const newCommentText = 'Some New Text'
 	// 		//Act
-	// 		const response = await requester.put(contentEndpoint + '?id=' + commentId).set('authorization', 'Bearer ' + token).send({
+	// 		const response = await requester.put(contentEndpoint + '?id=' + contentId).set('authorization', 'Bearer ' + token).send({
 	// 			commentText: newCommentText
 	// 		})
 	// 		//Assert
@@ -364,15 +362,15 @@ describe('Content',() => {
 	// 				userId
 	// 			]
 	// 		}
-	// 		const returnItem = await Comment.create(testContent)
-	// 		const commentId = returnItem.id
+	// 		const returnItem = await Content.create(testContent)
+	// 		const contentId = returnItem.id
 	// 		//Act
-	// 		const response = await requester.delete(contentEndpoint + '?id=' + commentId).set('authorization', 'Bearer ' + token)
+	// 		const response = await requester.delete(contentEndpoint + '?id=' + contentId).set('authorization', 'Bearer ' + token)
 	// 		//Assert
 	// 		response.should.have.status(200)
 	// 		response.body.message.should.equal('Comment was successfully removed from the database')
 	// 		response.body.result.should.containSubset({
-	// 			id: commentId
+	// 			id: contentId
 	// 		})
 	// 		response.body.result.should.not.have.property('_id')
 	// 	})
@@ -402,9 +400,9 @@ describe('Content',() => {
 	// 				userId
 	// 			]
 	// 		}
-	// 		const returnItem = await Comment.create(testContent)
-	// 		const commentId = returnItem.id
-	// 		await requestWithoutToken(requester.delete(contentEndpoint + '?id=' + commentId))
+	// 		const returnItem = await Content.create(testContent)
+	// 		const contentId = returnItem.id
+	// 		await requestWithoutToken(requester.delete(contentEndpoint + '?id=' + contentId))
 
 	// 	}),
 	// 	it('Should return an error, when sending invalid token', async function () {
@@ -417,9 +415,9 @@ describe('Content',() => {
 	// 				userId
 	// 			]
 	// 		}
-	// 		const returnItem = await Comment.create(testContent)
-	// 		const commentId = returnItem.id
-	// 		await requestWithInvalidToken(requester.delete(contentEndpoint + '?id=' + commentId))
+	// 		const returnItem = await Content.create(testContent)
+	// 		const contentId = returnItem.id
+	// 		await requestWithInvalidToken(requester.delete(contentEndpoint + '?id=' + contentId))
 	// 	})
 	// })
 })
