@@ -66,7 +66,6 @@ export async function get(
 		returnItem = returnItem.map(element => {
 			return cleanMongoGetRequest(element)
 		})
-
 		return next({
 			httpCode: 200,
 			messageCode: 'code200',
@@ -88,7 +87,6 @@ export async function getById(model, objectName, id, next) {
 				error: error,
 			})
 		}
-		returnItem = cleanMongoGetRequest(returnItem)
 		if (returnItem === null) {
 			return next({
 				httpCode: 404,
@@ -135,7 +133,6 @@ export async function add(model, objectName, body, next,validationFunction) {
 			objectName: objectName,
 		})
 	}
-	returnItem = cleanMongoGetRequest(returnItem)
 	return next({
 		httpCode: 201,
 		messageCode: 'creationSuccess',
