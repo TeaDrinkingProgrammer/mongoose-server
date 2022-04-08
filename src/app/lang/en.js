@@ -1,4 +1,5 @@
 import logger from '../config/logger.js'
+import { uppercaseFirstChar } from '../helpers/helperMethods.js'
 
 class Lang {
 	genericStrings = {
@@ -44,6 +45,7 @@ class Lang {
 			objectName !== undefined &&
       this.interpolatedStrings[messageCode] !== null
 		) {
+			objectName = uppercaseFirstChar(objectName)
 			return this.interpolatedStrings(messageCode, objectName)
 		} else if (this.genericStrings[messageCode] !== null) {
 			return this.genericStrings[messageCode]

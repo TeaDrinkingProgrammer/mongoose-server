@@ -1,5 +1,5 @@
 import logger from '../../config/logger.js'
-import { cleanMongoGetRequest, IsEmptyOrUndefined, uppercaseFirstChar } from '../../helpers/helperMethods.js'
+import { cleanMongoGetRequest, IsEmptyOrUndefined } from '../../helpers/helperMethods.js'
 
 export async function get(
 	model,
@@ -48,7 +48,6 @@ export async function get(
 		}
 		returnItem = await query
 	} catch (error) {
-		objectName = uppercaseFirstChar(objectName)
 		return next({
 			httpCode: 500,
 			messageCode: 'retrievalError',
@@ -79,7 +78,6 @@ export async function getById(model, objectName, id, next) {
 	logger.debug('generic get')
 	let returnItem
 	if (id) {
-		objectName = uppercaseFirstChar(objectName)
 		try {
 			returnItem = await model.findById(id)
 		} catch (error) {
@@ -138,7 +136,6 @@ export async function add(model, objectName, body, next,validationFunction) {
 		})
 	}
 	returnItem = cleanMongoGetRequest(returnItem)
-	objectName = uppercaseFirstChar(objectName)
 	return next({
 		httpCode: 201,
 		messageCode: 'creationSuccess',
