@@ -24,7 +24,15 @@ export async function getContentList(req, res, next) {
 }
 export async function addContentList(req, res, next) {
 	req.body.user = req.userId
-	await add(ContentList, 'contentList', req.body, next)
+	await add(ContentList, 'contentList', req.body, next, (body,next) =>{
+		if(body.name === undefined || body.isPrivate === undefined || body.user === undefined){
+			return next({
+				httpCode: 400,
+				messageCode: 'objectsAreMissingCode400',
+				objectName: 'The name, isPrivate and/or user'
+			})
+		}
+	})
 }
 export async function updateContentList(req, res, next) {
 	req.body.user = req.userId

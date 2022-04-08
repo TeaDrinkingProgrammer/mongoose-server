@@ -25,6 +25,11 @@ export function cleanMongoGetRequest(returnItem){
 			return cleanMongoGetRequest(element)
 		})
 	}
+	if((!IsEmptyOrUndefined(returnItem.content)) && Array.isArray(returnItem.content)){
+		returnItem.content = returnItem.content.map(element => {
+			return cleanMongoGetRequest(element)
+		})
+	}
 	return returnItem
 }
 export function randomStringGen(len){
