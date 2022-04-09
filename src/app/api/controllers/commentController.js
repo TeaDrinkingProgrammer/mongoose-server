@@ -4,7 +4,7 @@ import { get, getById, add, update, removeById } from './genericController.js'
 export async function getComment(req, res, next) {
 	if (req.query.contentId) {
 		req.body.content = req.query.contentId
-		let sortOn = req.query.sortOn ? req.query.sortOn : 'karma'
+		let sortOn = req.query.sortOn ? req.query.sortOn : 'votesCount'
 		await get(
 			Comment,
 			'comment',
