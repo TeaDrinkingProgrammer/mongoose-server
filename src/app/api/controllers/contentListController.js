@@ -2,25 +2,23 @@ import ContentList from '../models/contentList.js'
 import { get, getById, add, update, removeById } from './genericController.js'
 
 export async function getContentList(req, res, next) {
-	if (req.query.id) {
-		await getById(ContentList, 'contentList', req.query.id, next)
-	} else {
-		let sortOn = req.query.sortOn ? req.query.sortOn : 'name'
-		if (req.query.userId) {
-			req.body.userId = req.query.userId
-		}
-		await get(
-			ContentList,
-			'contentList',
-			sortOn,
-			req.query.sortOrder,
-			req.query.skip,
-			req.query.limit,
-			req.body,
-			next
-		)
-		//model, objectName, sortOn, skip, limit, body, next
+	let sortOn = req.query.sortOn ? req.query.sortOn : 'name'
+	if (req.query.userId) {
+		req.body.userId = req.query.userId
 	}
+	await get(
+		ContentList,
+		'contentList',
+		sortOn,
+		req.query.sortOrder,
+		req.query.skip,
+		req.query.limit,
+		req.body,
+		next
+	)
+}
+export async function getContentListById(req, res, next){
+	await getById(ContentList, 'contentList', req.params.id, next)
 }
 export async function addContentList(req, res, next) {
 	req.body.user = req.userId

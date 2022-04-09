@@ -147,7 +147,7 @@ describe('ContentList',() => {
 			const returnItem = await ContentList.create(testContentList)
 			const contentListId = returnItem.id
 			//Act
-			const response = await requester.get(contentListEndpoint + '?id=' + contentListId)
+			const response = await requester.get(contentListEndpoint + '/' + contentListId)
 			//Assert
 			response.should.have.status(200)
 			response.body.result.name.should.equal(testContentList.name)
@@ -156,7 +156,7 @@ describe('ContentList',() => {
 		})
 		it('Should return an error, when sent a non-existant id', async function () {
 			//Act
-			const response = await requester.get(contentListEndpoint + '?id=' + '439jGH456f')
+			const response = await requester.get(contentListEndpoint + '/' + '439jGH456f')
 			//Assert
 			response.should.have.status(500)
 			response.body.message.should.equal('ContentList could not be retrieved')
