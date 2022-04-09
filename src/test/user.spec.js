@@ -29,7 +29,7 @@ describe('User',() => {
 			const returnItem = await User.create(testUser)
 			const userId = returnItem.id
 			//Act
-			const response = await requester.get(userEndpoint + '?id=' + userId)
+			const response = await requester.get(userEndpoint + '/' + userId)
 			//Assert
 			response.should.have.status(200)
 			response.body.result.email.should.equal(testUser.email)
@@ -37,7 +37,7 @@ describe('User',() => {
 		})
 		it('Should return an error, when sent a non-existant id', async function () {
 			//Act
-			const response = await requester.get(userEndpoint + '?id=' + '439jGH456f')
+			const response = await requester.get(userEndpoint + '/' + '439jGH456f')
 			//Assert
 			response.should.have.status(500)
 			response.body.message.should.equal('User could not be retrieved')

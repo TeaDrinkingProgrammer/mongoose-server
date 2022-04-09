@@ -6,21 +6,20 @@ import { getNeoQuery } from '../../config/neoQueries.js'
 import logger from '../../config/logger.js'
 //TODO: Add new endpoint for following users or add to getUser?
 export async function getUser(req, res, next) {
-	if (req.query.id) {
-		await getById(User, 'user', req.query.id, next)
-	} else {
-		let sortOn = req.query.sortOn ? req.query.sortOn : 'username'
-		await get(
-			User,
-			'user',
-			sortOn,
-			req.query.sortOrder,
-			req.query.skip,
-			req.query.limit,
-			req.body,
-			next
-		)
-	}
+	let sortOn = req.query.sortOn ? req.query.sortOn : 'username'
+	await get(
+		User,
+		'user',
+		sortOn,
+		req.query.sortOrder,
+		req.query.skip,
+		req.query.limit,
+		req.body,
+		next
+	)
+}
+export async function getUserById(req, res, next){
+	await getById(User, 'user', req.params.id, next)
 }
 export async function updateUser(req, res, next) {
 	await update(User, 'user', req.query.id, req.body, next)

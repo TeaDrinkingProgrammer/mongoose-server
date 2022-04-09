@@ -115,7 +115,7 @@ describe('Comment',() => {
 			const returnItem = await Comment.create(testComment)
 			const commentId = returnItem.id
 			//Act
-			const response = await requester.get(commentEndpoint + '?id=' + commentId)
+			const response = await requester.get(commentEndpoint + '/' + commentId)
 			//Assert
 			response.should.have.status(200)
 			response.body.message.should.equal('Comment was successfully retrieved')
@@ -126,7 +126,7 @@ describe('Comment',() => {
 		}),
 		it('Should return an error, when sent a non-existant id', async function () {
 			//Act
-			const response = await requester.get(commentEndpoint + '?id=' + '439jGH456f')
+			const response = await requester.get(commentEndpoint + '/' + '439jGH456f')
 			//Assert
 			response.should.have.status(500)
 			response.body.message.should.equal('Comment could not be retrieved')
