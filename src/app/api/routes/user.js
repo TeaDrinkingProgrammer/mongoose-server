@@ -14,10 +14,10 @@ const router = Router()
 
 router.get('/', getUser)
 router.get('/:id', getUserById)
+router.delete('/',authoriseToken, removeUser)
+router.put('/',authoriseToken, updateUser)
 router.post('/:id/follow', authoriseToken, followUser)
 router.delete('/:id/follow', authoriseToken, unfollowUser)
 router.get('/:id/follow', getFollows)
 router.get('/:id/followers', getFollowers)
-router.delete('/',authoriseToken, removeUser)
-router.put('/',authoriseToken, updateUser)
 export default router
