@@ -149,7 +149,7 @@ describe('Content',() => {
 			const returnItem = await Content.create(testContent)
 			const contentId = returnItem.id
 			//Act
-			const response = await requester.get(contentEndpoint + '?id=' + contentId)
+			const response = await requester.get(contentEndpoint + '/' + contentId)
 			//Assert
 			response.should.have.status(200)
 			response.body.result.name.should.equal(testContent.name)
@@ -158,7 +158,7 @@ describe('Content',() => {
 		})
 		it('Should return an error, when sent a non-existant id', async function () {
 			//Act
-			const response = await requester.get(contentEndpoint + '?id=' + '439jGH456f')
+			const response = await requester.get(contentEndpoint + '/' + '439jGH456f')
 			//Assert
 			response.should.have.status(500)
 			response.body.message.should.equal('Content could not be retrieved')
