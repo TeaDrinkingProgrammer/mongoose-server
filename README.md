@@ -258,9 +258,9 @@ Deletes the comment with the corresponding ID
 | /api/user/:id/followers     | X | 2 | X|X|
 
 ## Mongo model:
-
+<img src="https://raw.githubusercontent.com/TeaDrinkingProgrammer/mongoose-server/main/documentation/mongoModel.png" img-width="65%">
 ## NEO model:
-
+<img src="https://raw.githubusercontent.com/TeaDrinkingProgrammer/mongoose-server/main/documentation/neo4jRelationships.png" img-width="65%">
 ## ERD:
-
+<img src="https://raw.githubusercontent.com/TeaDrinkingProgrammer/mongoose-server/main/documentation/ERD.png" img-width="65%">
 
