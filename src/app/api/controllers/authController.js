@@ -5,6 +5,7 @@ import jwt from 'jsonwebtoken'
 import logger from '../../config/logger.js'
 import { getSession } from '../../loaders/neo4j.js'
 import { IsEmptyOrUndefined, signToken } from '../../helpers/helperMethods.js'
+import { getNeoQuery } from '../../config/neoQueries.js'
 
 export async function login(req, res, next) {
 	if(IsEmptyOrUndefined(req.body)){
@@ -114,7 +115,8 @@ export async function register(req, res, next) {
 				try {
 					//If user is created in Mongo, add userid as node in Neo4j
 					let session = getSession()
-					await session.run('MERGE (:User{_id: $id })',
+					const query = getNeoQuery('insertForId')
+					await session.run(query,
 						{id: returnItem.id})
 				} catch (error) {
 					let returnedError

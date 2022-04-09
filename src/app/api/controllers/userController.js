@@ -2,6 +2,8 @@ import User from '../models/user.js'
 import { get, getById, update, removeById } from './genericController.js'
 import { getSession } from '../../loaders/neo4j.js'
 import { cleanMongoGetRequest } from '../../helpers/helperMethods.js'
+import { getNeoQuery } from '../../config/neoQueries.js'
+import logger from '../../config/logger.js'
 //TODO: Add new endpoint for following users or add to getUser?
 export async function getUser(req, res, next) {
 	if (req.query.id) {
@@ -35,15 +37,17 @@ export async function followUser(req, res, next) {
 		let user2IdExists = await idExists(user2Id,next)
 		if (user1IdExists && user2IdExists) {
 			try {
-				await session.run('MATCH (user1:User{_id: $user1Id}) MATCH (user2:User{_id: $user2Id}) MERGE (user1)-[:FOLLOWS]->(user2)', {
+				const query = getNeoQuery('followUser2')
+				await session.run(query, {
 					user1Id: user1Id,
 					user2Id: user2Id
 				})
 			} catch (error) {
 				return next({
-					httpCode: 404,
-					messageCode: 'code500',
-					error: error
+					httpCode: 500,
+					messageCode: 'retrievalError',
+					objectName: 'Follow',
+					error: error,
 				})
 			}
 			//TODO: Could add check for if a user is already following another user, this doesn't matter though, because we use MERGE. Could check with output of neoQuery
@@ -77,31 +81,30 @@ export async function getFollowsorFollowers(req, res, next,follows) {
 	const userId = req.params.id
 	if (userId) {
 		let userIdExists = await idExists(userId,next)
-		if (userIdExists) {
-			let neoQuery
+		if (userIdExists.bool) {
+			let query
+			let neoQueryResult
+			if(follows == true){
+				query = getNeoQuery('getFollowsForUser1')
+			} else {
+				query = getNeoQuery('getFollowersForUser1')
+			}
 			try {
-				if(follows == true){
-					neoQuery = await session.run('MATCH (user1:User{_id: $user1Id}) MATCH (user2:User)-[:FOLLOWS]->(user1:User) RETURN user2', {
-						user1Id: userId
-					})
-					console.log(neoQuery)
-				} else {
-					neoQuery = await session.run('MATCH (user1:User{_id: $user1Id}) MATCH (user1:User)-[:FOLLOWS]->(user2:User) RETURN user2', {
-						user1Id: userId
-					})
-					console.log(neoQuery)
-				}
-
+				neoQueryResult = await session.run(query, {
+					user1Id: userId
+				})
+				logger.log(neoQueryResult)
 			} catch (error) {
 				return next({
-					httpCode: 404,
-					messageCode: 'code500',
-					error: error
+					httpCode: 500,
+					messageCode: 'retrievalError',
+					objectName: 'Follow',
+					error: error,
 				})
 			}
 			let userArray = []
-			for(let i = 0;  i < neoQuery.records.length;i++){
-				const node = neoQuery.records[i]._fields[0]
+			for(let i = 0;  i < neoQueryResult.records.length;i++){
+				const node = neoQueryResult.records[i]._fields[0]
 				let returnItem = await User.findById(node.properties._id)
 				returnItem = cleanMongoGetRequest(returnItem)
 				userArray.push(returnItem)
@@ -112,11 +115,20 @@ export async function getFollowsorFollowers(req, res, next,follows) {
 				result: userArray
 			})
 		} else {
-			return next({
-				httpCode: 404,
-				messageCode: 'code404',
-				objectName: 'User id or followUserId'
-			})
+			if(userIdExists.error){
+				return next({
+					httpCode: 500,
+					messageCode: 'deletionError',
+					objectName: 'follow'
+				})
+			} else {
+				return next({
+					httpCode: 404,
+					messageCode: 'code404',
+					objectName: 'User id or followUserId'
+				})
+			}
+
 		}
 	} else {
 		return next({
@@ -132,17 +144,19 @@ export async function unfollowUser(req, res, next) {
 	if (user1Id && user2Id) {
 		let user1IdExists = await idExists(user1Id,next)
 		let user2IdExists = await idExists(user2Id,next)
-		if (user1IdExists && user2IdExists) {
+		if (user1IdExists.bool && user2IdExists.bool) {
 			try {
-				await session.run('MATCH (user1:User{_id: $user1Id}) MATCH (user2:User{_id: $user2Id}) MATCH (user1)-[rel:FOLLOWS]->(user2) DELETE rel', {
+				const query = getNeoQuery('unFollowUser2')
+				await session.run(query, {
 					user1Id: user1Id,
 					user2Id: user2Id
 				})
 			} catch (error) {
 				return next({
-					httpCode: 404,
-					messageCode: 'code500',
-					error: error
+					httpCode: 500,
+					messageCode: 'deletionError',
+					objectName: 'follow',
+					error: error,
 				})
 			}
 			//TODO: Could add check for if a user is already following another user, this doesn't matter though, because we use MERGE. Could check with output of neoQuery
@@ -152,32 +166,49 @@ export async function unfollowUser(req, res, next) {
 				messageCode: 'unfollowSuccess',
 			})
 		} else {
-			return next({
-				httpCode: 404,
-				messageCode: 'code404',
-				objectName: 'User id or followUserId'
-			})
+			if(user1IdExists.error){
+				return next({
+					httpCode: 500,
+					messageCode: 'deletionError',
+					objectName: 'User 1'
+				})
+			} else if(user2IdExists.error){
+				return next({
+					httpCode: 500,
+					messageCode: 'deletionError',
+					objectName: 'User 2'
+				})
+			} else {
+				return next({
+					httpCode: 404,
+					messageCode: 'code404',
+					objectName: 'User id or followUserId'
+				})
+			}
 		}
 	} else {
 		return next({
 			httpCode: 400,
 			messageCode: 'idAndBodyNotIncludedError',
 		})
+
 	}
 }
-async function idExists(id,next) {
+async function idExists(id) {
 	try {
 		let query = await User.count({ _id: id })
 		if (query > 0) {
-			return true
+			return {
+				bool:true
+			}
 		} else {
-			return false
+			return {
+				bool:true
+			}
 		}
 	} catch (error) {
-		return next({
-			httpCode: 500,
-			messageCode: 'code500',
-			error: error,
-		})
+		return {
+			error: error
+		}
 	}
 }

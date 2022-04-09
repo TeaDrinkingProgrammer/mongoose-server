@@ -1,5 +1,5 @@
 import logger from '../../config/logger.js'
-import { cleanMongoGetRequest } from '../../helpers/helperMethods.js'
+import { cleanMongoGetRequest, IsEmptyOrUndefined } from '../../helpers/helperMethods.js'
 import getText from '../../lang/get-text.js'
 // eslint-disable-next-line no-unused-vars
 export default (packet, _req, res, _next) => {
@@ -11,7 +11,9 @@ export default (packet, _req, res, _next) => {
 	let message = getText(packet.messageCode, packet.objectName)
 	logger.debug('Message: ', message)
 	if (packet.httpCode >= 200 && packet.httpCode < 300) {
-		packet.result = cleanMongoGetRequest(packet.result)
+		if(!IsEmptyOrUndefined(packet.result)){
+			packet.result = cleanMongoGetRequest(packet.result)
+		}
 		res.status(packet.httpCode).json({
 			message: message,
 			result: packet.result,

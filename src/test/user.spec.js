@@ -2,7 +2,7 @@ import requester from './testSetup.spec.js'
 import User from '../app/api/models/user.js'
 import { randomStringGen, signToken } from '../app/helpers/helperMethods.js'
 import { requestWithInvalidToken, requestWithoutToken} from './sharedTests.js'
-const userEndpoint = '/api/user'
+export const userEndpoint = '/api/user'
 let token = ''
 describe('User',() => {
 	beforeEach( async function () {
@@ -196,10 +196,10 @@ describe('User',() => {
 		})
 		it('Should return an error, when not sending id', async function () {
 			//Act
-			const response = await requester.put(userEndpoint).set('authorization', 'Bearer ' + token)
+			const response = await requester.delete(userEndpoint).set('authorization', 'Bearer ' + token)
 			//Assert
 			response.should.have.status(400)
-			response.body.message.should.equal('Invalid request: cannot do request without an id and/or body!')
+			response.body.message.should.equal('Invalid request: cannot do request without an id!')
 		})
 		it('Should return an error, when sending request without token', async function () {
 			//Arrange

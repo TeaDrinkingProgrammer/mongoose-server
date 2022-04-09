@@ -353,10 +353,10 @@ describe('Comment',() => {
 		})
 		it('Should return an error, when not sending id', async function () {
 			//Act
-			const response = await requester.put(commentEndpoint).set('authorization', 'Bearer ' + token)
+			const response = await requester.delete(commentEndpoint).set('authorization', 'Bearer ' + token)
 			//Assert
 			response.should.have.status(400)
-			response.body.message.should.equal('Invalid request: cannot do request without an id and/or body!')
+			response.body.message.should.equal('Invalid request: cannot do request without an id!')
 		})
 		it('Should return an error, when sending request without token', async function () {
 			//Arrange
