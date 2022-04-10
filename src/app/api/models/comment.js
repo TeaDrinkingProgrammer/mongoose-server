@@ -33,5 +33,9 @@ const commentSchema = new Schema(
 commentSchema.virtual('votesCount').get(function () {
 	return this.votes.length
 })
+commentSchema.pre('findOneAndUpdate', function (next) {
+	this.options.runValidators = true
+	next()
+})
 const Comment = model('Comment', commentSchema)
 export default Comment

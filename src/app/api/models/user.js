@@ -36,6 +36,9 @@ const userSchema = new Schema(
 		toJSON: { virtuals: true },
 	}
 )
-
+userSchema.pre('findOneAndUpdate', function (next) {
+	this.options.runValidators = true
+	next()
+})
 const User = model('User', userSchema)
 export default User

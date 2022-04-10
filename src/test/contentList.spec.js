@@ -103,7 +103,7 @@ describe('ContentList',() => {
 			const response = await requester.post(contentListEndpoint).set('authorization', 'Bearer ' + token).send(testContentList)
 			//Assert
 			response.should.have.status(400)
-			response.body.message.should.equal('The name, isPrivate and/or user objects are missing in the request')
+			response.body.message.should.equal('The name objects are missing in the request')
 		}),
 		it('Should return an error, when sending request without token', async function () {
 			//Arrange

@@ -72,7 +72,10 @@ contentSchema.set(
 	'toObject',
 	{ virtuals: true }
 )
-
+contentSchema.pre('findOneAndUpdate', function (next) {
+	this.options.runValidators = true
+	next()
+})
 contentSchema.pre('remove', async function (next) {
 	const contentList = mongoose.Model('ContentList')
 	const comment = mongoose.Model('Model')

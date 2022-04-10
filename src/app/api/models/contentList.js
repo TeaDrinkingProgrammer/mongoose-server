@@ -32,5 +32,9 @@ const contentListSchema = new Schema(
 		timestamps: true,
 	}
 )
+contentListSchema.pre('findOneAndUpdate', function (next) {
+	this.options.runValidators = true
+	next()
+})
 const ContentList = model('ContentList', contentListSchema)
 export default ContentList
