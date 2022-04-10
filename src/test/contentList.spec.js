@@ -246,7 +246,7 @@ describe('ContentList',() => {
 				name: 'Some other name'
 			}
 			//Act
-			const response = await requester.put(contentListEndpoint + '?id=' + contentListId).set('authorization', 'Bearer ' + token).send(update)
+			const response = await requester.put(contentListEndpoint + '/' + contentListId).set('authorization', 'Bearer ' + token).send(update)
 			//Assert
 			response.should.have.status(200)
 			response.body.message.should.equal('ContentList was successfully updated')
@@ -261,7 +261,7 @@ describe('ContentList',() => {
 				name: 'Some other name'
 			}
 			//Act
-			const response = await requester.put(contentListEndpoint + '?id=' + fakeId).set('authorization', 'Bearer ' + token).send(update)
+			const response = await requester.put(contentListEndpoint + '/' + fakeId).set('authorization', 'Bearer ' + token).send(update)
 			//Assert
 			response.should.have.status(500)
 			response.body.message.should.equal('ContentList could not be updated')
@@ -275,23 +275,45 @@ describe('ContentList',() => {
 			//Act
 			const response = await requester.put(contentListEndpoint).set('authorization', 'Bearer ' + token).send(update)
 			//Assert
-			response.should.have.status(400)
-			response.body.message.should.equal('Invalid request: cannot do request without an id and/or body!')
+			response.should.have.status(404)
+			response.body.message.should.equal('Endpoint not found!')
 		}),
 		it('Should return an error, when sending request without token', async function () {
+			const testContentList = {
+				name: 'My Language List',
+				description: 'I am trying to learn Portuguese and Chinese',
+				isPrivate: true,
+				user: userId,
+				content: [
+					contentItem1Id, contentItem2Id
+				]
+			}
+			const returnItem2 = await ContentList.create(testContentList)
+			contentItem1Id = returnItem2.id
 			const update = {
 				description: 'A new description',
 				name: 'Some other name'
 			}
-			await requestWithoutToken(requester.put(contentListEndpoint),update )
+			await requestWithoutToken(requester.put(contentListEndpoint + '/' + contentItem1Id),update )
 
 		}),
 		it('Should return an error, when sending invalid token', async function () {
+			const testContentList = {
+				name: 'My Language List',
+				description: 'I am trying to learn Portuguese and Chinese',
+				isPrivate: true,
+				user: userId,
+				content: [
+					contentItem1Id, contentItem2Id
+				]
+			}
+			const returnItem2 = await ContentList.create(testContentList)
+			contentItem1Id = returnItem2.id
 			const update = {
 				description: 'A new description',
 				name: 'Some other name'
 			}
-			await requestWithInvalidToken(requester.put(contentListEndpoint),update )
+			await requestWithInvalidToken(requester.put(contentListEndpoint + '/' + contentItem1Id),update )
 		})
 	})
 	describe('Delete Comment',() => {
@@ -309,7 +331,7 @@ describe('ContentList',() => {
 			const returnItem = await ContentList.create(testContentList)
 			const contentListId = returnItem.id
 			//Act
-			const response = await requester.delete(contentListEndpoint + '?id=' + contentListId).set('authorization', 'Bearer ' + token)
+			const response = await requester.delete(contentListEndpoint + '/' + contentListId).set('authorization', 'Bearer ' + token)
 			//Assert
 			response.should.have.status(200)
 			response.body.message.should.equal('ContentList was successfully removed from the database')
@@ -322,7 +344,7 @@ describe('ContentList',() => {
 			//Arrange
 			const fakeId = randomStringGen(24)
 			//Act
-			const response = await requester.delete(contentListEndpoint + '?id=' + fakeId).set('authorization', 'Bearer ' + token)
+			const response = await requester.delete(contentListEndpoint + '/' + fakeId).set('authorization', 'Bearer ' + token)
 			//Assert
 			response.should.have.status(500)
 			response.body.message.should.equal('ContentList could not be removed from the database')
@@ -331,8 +353,8 @@ describe('ContentList',() => {
 			//Act
 			const response = await requester.delete(contentListEndpoint).set('authorization', 'Bearer ' + token)
 			//Assert
-			response.should.have.status(400)
-			response.body.message.should.equal('Invalid request: cannot do request without an id!')
+			response.should.have.status(404)
+			response.body.message.should.equal('Endpoint not found!')
 		})
 		it('Should return an error, when sending request without token', async function () {
 			//Arrange
@@ -347,7 +369,7 @@ describe('ContentList',() => {
 			}
 			const returnItem = await ContentList.create(testContentList)
 			const contentListId = returnItem.id
-			await requestWithoutToken(requester.delete(contentListEndpoint + '?id=' + contentListId))
+			await requestWithoutToken(requester.delete(contentListEndpoint + '/' + contentListId))
 
 		}),
 		it('Should return an error, when sending invalid token', async function () {
@@ -363,7 +385,7 @@ describe('ContentList',() => {
 			}
 			const returnItem = await ContentList.create(testContentList)
 			const contentListId = returnItem.id
-			await requestWithInvalidToken(requester.delete(contentListEndpoint + '?id=' + contentListId))
+			await requestWithInvalidToken(requester.delete(contentListEndpoint + '/' + contentListId))
 		})
 	})
 })

@@ -12,6 +12,6 @@ const router = Router()
 router.get('/', getContentList)
 router.get('/:id',getContentListById)
 router.post('/', authoriseToken, addContentList)
-router.delete('/', authoriseToken, removeContentList)
-router.put('/', authoriseToken, updateContentList)
+router.delete('/:id', authoriseToken, removeContentList)
+router.put('/:id', authoriseToken, updateContentList)
 export default router

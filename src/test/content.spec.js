@@ -313,7 +313,7 @@ describe('Content',() => {
 				name: 'Portuguese for Intermediates'
 			}
 			//Act
-			const response = await requester.put(contentEndpoint + '?id=' + contentId).set('authorization', 'Bearer ' + token).send(update)
+			const response = await requester.put(contentEndpoint + '/' + contentId).set('authorization', 'Bearer ' + token).send(update)
 			//Assert
 			response.should.have.status(200)
 			response.body.message.should.equal('Content was successfully updated')
@@ -328,7 +328,7 @@ describe('Content',() => {
 				name: 'Portuguese for Intermediates'
 			}
 			//Act
-			const response = await requester.put(contentEndpoint + '?id=' + fakeId).set('authorization', 'Bearer ' + token).send(update)
+			const response = await requester.put(contentEndpoint + '/' + fakeId).set('authorization', 'Bearer ' + token).send(update)
 			//Assert
 			response.should.have.status(500)
 			response.body.message.should.equal('Content could not be updated')
@@ -342,23 +342,61 @@ describe('Content',() => {
 			//Act
 			const response = await requester.put(contentEndpoint).set('authorization', 'Bearer ' + token).send(update)
 			//Assert
-			response.should.have.status(400)
-			response.body.message.should.equal('Invalid request: cannot do request without an id and/or body!')
+			response.should.have.status(404)
+			response.body.message.should.equal('Endpoint not found!')
 		}),
 		it('Should return an error, when sending request without token', async function () {
+			const testContent = {
+				name: 'Portuguese for Beginners',
+				tags: ['Portugal','Culture'],
+				inProduction: true,
+				platforms: [
+					{
+						name: 'Youtube',
+						link: 'Youtube.com',
+					}
+				],
+				contentInterface: 'audio',
+				contentType: 'podcast',
+				websiteLink: 'portugueseforbeginners.com',
+				language: 'English',
+				targetLanguage: 'Portuguese',
+				user: userId
+			}
+			const returnItem = await Content.create(testContent)
+			const contentId = returnItem.id			
 			const update = {
 				websiteLink: 'portugueseforintermediates.com',
 				name: 'Portuguese for Intermediates'
 			}
-			await requestWithoutToken(requester.put(contentEndpoint),update )
+			await requestWithoutToken(requester.put(contentEndpoint + '/' + contentId),update )
 
 		}),
 		it('Should return an error, when sending invalid token', async function () {
+			const testContent = {
+				name: 'Portuguese for Beginners',
+				tags: ['Portugal','Culture'],
+				inProduction: true,
+				platforms: [
+					{
+						name: 'Youtube',
+						link: 'Youtube.com',
+					}
+				],
+				contentInterface: 'audio',
+				contentType: 'podcast',
+				websiteLink: 'portugueseforbeginners.com',
+				language: 'English',
+				targetLanguage: 'Portuguese',
+				user: userId
+			}
+			const returnItem = await Content.create(testContent)
+			const contentId = returnItem.id	
 			const update = {
 				websiteLink: 'portugueseforintermediates.com',
 				name: 'Portuguese for Intermediates'
 			}
-			await requestWithInvalidToken(requester.put(contentEndpoint),update )
+			await requestWithInvalidToken(requester.put(contentEndpoint + '/' + contentId),update )
 		})
 	})
 	describe('Delete Comment',() => {
@@ -384,7 +422,7 @@ describe('Content',() => {
 			const returnItem = await Content.create(testContent)
 			const contentId = returnItem.id
 			//Act
-			const response = await requester.delete(contentEndpoint + '?id=' + contentId).set('authorization', 'Bearer ' + token)
+			const response = await requester.delete(contentEndpoint + '/' + contentId).set('authorization', 'Bearer ' + token)
 			//Assert
 			response.should.have.status(200)
 			response.body.message.should.equal('Content was successfully removed from the database')
@@ -397,7 +435,7 @@ describe('Content',() => {
 			//Arrange
 			const fakeId = randomStringGen(24)
 			//Act
-			const response = await requester.delete(contentEndpoint + '?id=' + fakeId).set('authorization', 'Bearer ' + token)
+			const response = await requester.delete(contentEndpoint + '/' + fakeId).set('authorization', 'Bearer ' + token)
 			//Assert
 			response.should.have.status(500)
 			response.body.message.should.equal('Content could not be removed from the database')
@@ -406,8 +444,8 @@ describe('Content',() => {
 			//Act
 			const response = await requester.delete(contentEndpoint).set('authorization', 'Bearer ' + token)
 			//Assert
-			response.should.have.status(400)
-			response.body.message.should.equal('Invalid request: cannot do request without an id!')
+			response.should.have.status(404)
+			response.body.message.should.equal('Endpoint not found!')
 		})
 		it('Should return an error, when sending request without token', async function () {
 			//Arrange
@@ -430,7 +468,7 @@ describe('Content',() => {
 			}
 			const returnItem = await Content.create(testContent)
 			const contentId = returnItem.id
-			await requestWithoutToken(requester.delete(contentEndpoint + '?id=' + contentId))
+			await requestWithoutToken(requester.delete(contentEndpoint + '/' + contentId))
 
 		}),
 		it('Should return an error, when sending invalid token', async function () {
@@ -454,7 +492,7 @@ describe('Content',() => {
 			}
 			const returnItem = await Content.create(testContent)
 			const contentId = returnItem.id
-			await requestWithInvalidToken(requester.delete(contentEndpoint + '?id=' + contentId))
+			await requestWithInvalidToken(requester.delete(contentEndpoint + '/' + contentId))
 		})
 	})
 })

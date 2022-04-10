@@ -34,9 +34,9 @@ export async function addContentList(req, res, next) {
 }
 export async function updateContentList(req, res, next) {
 	req.body.user = req.userId
-	await update(ContentList, 'contentList', req.query.id, req.body, next)
+	await update(ContentList, 'contentList', req.params.id, req.body, next)
 }
 export async function removeContentList(req, res, next) {
 	req.body.user = req.userId
-	await removeById(ContentList, 'contentList', req.query.id, next)
+	await removeById(ContentList, 'contentList', req.params.id, next)
 }

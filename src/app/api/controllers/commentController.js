@@ -42,11 +42,11 @@ export async function addComment(req, res, next) {
 }
 export async function updateComment(req, res, next) {
 	// req.body.user = req.userId;
-	await update(Comment, 'comment', req.query.id, req.body, next)
+	await update(Comment, 'comment', req.params.id, req.body, next)
 }
 export async function removeComment(req, res, next) {
 	// req.body.user = req.userId;
-	await removeById(Comment, 'comment', req.query.id, next)
+	await removeById(Comment, 'comment', req.params.id, next)
 }
 
 // export async function upvote(req, req, next) {

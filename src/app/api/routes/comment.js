@@ -12,6 +12,6 @@ const router = Router()
 router.get('/', getComment)
 router.get('/:id', getCommentById)
 router.post('/', authoriseToken, addComment)
-router.delete('/', authoriseToken, removeComment)
-router.put('/', authoriseToken, updateComment)
+router.delete('/:id', authoriseToken, removeComment)
+router.put('/:id', authoriseToken, updateComment)
 export default router

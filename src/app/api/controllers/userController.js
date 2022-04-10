@@ -22,10 +22,10 @@ export async function getUserById(req, res, next){
 	await getById(User, 'user', req.params.id, next)
 }
 export async function updateUser(req, res, next) {
-	await update(User, 'user', req.query.id, req.body, next)
+	await update(User, 'user', req.params.id, req.body, next)
 }
 export async function removeUser(req, res, next) {
-	await removeById(User, 'user', req.query.id, next)
+	await removeById(User, 'user', req.params.id, next)
 }
 export async function followUser(req, res, next) {
 	let session = getSession()

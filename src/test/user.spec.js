@@ -116,7 +116,7 @@ describe('User',() => {
 				lastName: 'Johnsons'
 			}
 			//Act
-			const response = await requester.put(userEndpoint + '?id=' + userId2).set('authorization', 'Bearer ' + token).send(update)
+			const response = await requester.put(userEndpoint + '/' + userId2).set('authorization', 'Bearer ' + token).send(update)
 			//Assert
 			response.should.have.status(200)
 			response.body.message.should.equal('User was successfully updated')
@@ -131,7 +131,7 @@ describe('User',() => {
 				lastName: 'Johnsons'
 			}
 			//Act
-			const response = await requester.put(userEndpoint + '?id=' + fakeId).set('authorization', 'Bearer ' + token).send(update)
+			const response = await requester.put(userEndpoint + '/' + fakeId).set('authorization', 'Bearer ' + token).send(update)
 			//Assert
 			response.should.have.status(500)
 			response.body.message.should.equal('User could not be updated')
@@ -145,23 +145,39 @@ describe('User',() => {
 			//Act
 			const response = await requester.put(userEndpoint).set('authorization', 'Bearer ' + token).send(update)
 			//Assert
-			response.should.have.status(400)
-			response.body.message.should.equal('Invalid request: cannot do request without an id and/or body!')
+			response.should.have.status(404)
+			response.body.message.should.equal('Endpoint not found!')
 		}),
 		it('Should return an error, when sending request without token', async function () {
+			const testUser2 = {
+				email: 'johnjohnson@gmail.com',
+				firstName: 'John',
+				lastName: 'Johnson',
+				password: '$2b$10$2UgJ72WXxfroJmUInWJKpey7D9qBtlcauuv.t51YIGGHlsq/qUIqm'
+			}
+			const returnItem2 = await User.create(testUser2)
+			const userId2 = returnItem2.id
 			const update = {
 				email: 'johnjohnson@hotmail.com',
 				lastName: 'Johnsons'
 			}
-			await requestWithoutToken(requester.put(userEndpoint),update )
+			await requestWithoutToken(requester.put(userEndpoint + '/' + userId2),update )
 
 		}),
 		it('Should return an error, when sending invalid token', async function () {
+			const testUser2 = {
+				email: 'johnjohnson@gmail.com',
+				firstName: 'John',
+				lastName: 'Johnson',
+				password: '$2b$10$2UgJ72WXxfroJmUInWJKpey7D9qBtlcauuv.t51YIGGHlsq/qUIqm'
+			}
+			const returnItem2 = await User.create(testUser2)
+			const userId2 = returnItem2.id
 			const update = {
 				email: 'johnjohnson@hotmail.com',
 				lastName: 'Johnsons'
 			}
-			await requestWithInvalidToken(requester.put(userEndpoint),update )
+			await requestWithInvalidToken(requester.put(userEndpoint + '/' + userId2),update )
 		})
 	})
 	describe('Delete Comment',() => {
@@ -176,7 +192,7 @@ describe('User',() => {
 			const returnItem2 = await User.create(testUser2)
 			const userId2 = returnItem2.id
 			//Act
-			const response = await requester.delete(userEndpoint + '?id=' + userId2).set('authorization', 'Bearer ' + token)
+			const response = await requester.delete(userEndpoint + '/' + userId2).set('authorization', 'Bearer ' + token)
 			//Assert
 			response.should.have.status(200)
 			response.body.message.should.equal('User was successfully removed from the database')
@@ -189,7 +205,7 @@ describe('User',() => {
 			//Arrange
 			const fakeId = randomStringGen(24)
 			//Act
-			const response = await requester.delete(userEndpoint + '?id=' + fakeId).set('authorization', 'Bearer ' + token)
+			const response = await requester.delete(userEndpoint + '/' + fakeId).set('authorization', 'Bearer ' + token)
 			//Assert
 			response.should.have.status(500)
 			response.body.message.should.equal('User could not be removed from the database')
@@ -198,8 +214,8 @@ describe('User',() => {
 			//Act
 			const response = await requester.delete(userEndpoint).set('authorization', 'Bearer ' + token)
 			//Assert
-			response.should.have.status(400)
-			response.body.message.should.equal('Invalid request: cannot do request without an id!')
+			response.should.have.status(404)
+			response.body.message.should.equal('Endpoint not found!')
 		})
 		it('Should return an error, when sending request without token', async function () {
 			//Arrange
@@ -211,7 +227,7 @@ describe('User',() => {
 			}
 			const returnItem = await User.create(testUser2)
 			const userId2 = returnItem.id
-			await requestWithoutToken(requester.delete(userEndpoint + '?id=' + userId2))
+			await requestWithoutToken(requester.delete(userEndpoint + '/' + userId2))
 
 		}),
 		it('Should return an error, when sending invalid token', async function () {
@@ -224,7 +240,7 @@ describe('User',() => {
 			}
 			const returnItem2 = await User.create(testUser2)
 			const userId2 = returnItem2.id
-			await requestWithInvalidToken(requester.delete(userEndpoint + '?id=' + userId2))
+			await requestWithInvalidToken(requester.delete(userEndpoint + '/' + userId2))
 		})
 	})
 })
