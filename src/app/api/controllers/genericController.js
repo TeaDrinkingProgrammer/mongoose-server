@@ -56,7 +56,7 @@ export async function get(
 		})
 	}
 
-	if (returnItem === null) {
+	if (IsEmptyOrUndefined(returnItem)) {
 		return next({
 			httpCode: 404,
 			messageCode: 'code404',
@@ -87,7 +87,7 @@ export async function getById(model, objectName, id, next) {
 				error: error,
 			})
 		}
-		if (returnItem === null) {
+		if (IsEmptyOrUndefined(returnItem)) {
 			return next({
 				httpCode: 404,
 				messageCode: 'code404',
@@ -157,7 +157,7 @@ export async function update(model, objectName, id, body, next) {
 				objectName: objectName,
 			})
 		}
-		if (returnItem !== null) {
+		if (!IsEmptyOrUndefined(returnItem)) {
 			return next({
 				httpCode: 200,
 				messageCode: 'updateSuccess',

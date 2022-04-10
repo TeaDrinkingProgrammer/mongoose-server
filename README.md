@@ -201,11 +201,7 @@ Creates a new comment.
 ```JSON
 {
   *"commentText": "Lorem ipsum",
-  *"user": "1245",
-  *"content": "1245",
-  "votes": {
-    *"userId": "12345"
-  }
+  *"content": "1245"
 }
 ```
 

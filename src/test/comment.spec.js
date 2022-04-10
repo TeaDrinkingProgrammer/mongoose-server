@@ -130,17 +130,10 @@ describe('Comment',() => {
 			//Assert
 			response.should.have.status(500)
 			response.body.message.should.equal('Comment could not be retrieved')
-		}),
-		it('Should return an error, when not sending id', async function () {
-			//Act
-			const response = await requester.get(commentEndpoint).set('authorization', 'Bearer ' + token)
-			//Assert
-			response.should.have.status(400)
-			response.body.message.should.equal('Invalid request: cannot do request without an id!')
 		})
 	})
 	describe('Get all Comments',() => {
-		it('Should return a valid response, when sending a request with a contentId', async function () {
+		it('Should return a valid response, when sending a request', async function () {
 			//Arrange
 			const testComment = {
 				commentText: 'Lorem ipsumses',
@@ -181,7 +174,7 @@ describe('Comment',() => {
 			]			
 			await Comment.create(testComment2)
 			//Act
-			const response = await requester.get(commentEndpoint + '?contentId=' + contentId)
+			const response = await requester.get(commentEndpoint)
 			//Assert
 			response.should.have.status(200)
 			response.body.message.should.equal('The item(s) were successfully retrieved')
@@ -219,7 +212,7 @@ describe('Comment',() => {
 			response.body.result.should.not.have.property('_id')
 			response.body.result.should.have.lengthOf(1)
 		}),
-		it('Should return an error, when sending a request without contentId', async function () {
+		it('Should return an error, when sending a contentId with no comments', async function () {
 			//Arrange
 			const testComment = {
 				commentText: 'Lorem ipsumses',
@@ -230,20 +223,29 @@ describe('Comment',() => {
 				]
 			}
 			await Comment.create(testComment)
-			const testComment2 = {
-				commentText: 'Blabla',
-				user: userId,
-				content:  contentId,
-				votes: [
-					userId
-				]
+			const testContent = {
+				name: 'Aloha Hawai',
+				tags: ['Hawai','Culture'],
+				inProduction: true,
+				platforms: [
+					{
+						name: 'Youtube',
+						link: 'Youtube.com',
+					}
+				],
+				contentInterface: 'video',
+				contentType: 'videos',
+				websiteLink: 'somewebsite.com',
+				language: 'English',
+				targetLanguage: 'Hawaien',
+				user: userId
 			}
-			await Comment.create(testComment2)
+			const returnItem2 = await Content.create(testContent)
 			//Act
-			const response = await requester.get(commentEndpoint)
+			const response = await requester.get(commentEndpoint + '?contentId=' + returnItem2.id)
 			//Assert
-			response.should.have.status(400)
-			response.body.message.should.equal('Invalid request: cannot do request without an id!')
+			response.should.have.status(404)
+			response.body.message.should.equal('Comment does not exist')
 		})
 		it('Should return an error, when sent a non-existant id', async function () {
 			//Act

@@ -2,26 +2,21 @@ import Comment from '../models/comment.js'
 import { get, getById, add, update, removeById } from './genericController.js'
 
 export async function getComment(req, res, next) {
-	if (req.query.contentId) {
+	if(req.query.contentId){
 		req.body.content = req.query.contentId
-		let sortOn = req.query.sortOn ? req.query.sortOn : 'votesCount'
-		await get(
-			Comment,
-			'comment',
-			sortOn,
-			req.query.sortOrder,
-			req.query.skip,
-			req.query.limit,
-			req.body,
-			next
-		)
-		//model, objectName, sortOn, skip, limit, body, next
-	} else {
-		return next({
-			httpCode: 400,
-			messageCode: 'idNotIncludedError'
-		})
 	}
+	let sortOn = req.query.sortOn ? req.query.sortOn : 'votesCount'
+	await get(
+		Comment,
+		'comment',
+		sortOn,
+		req.query.sortOrder,
+		req.query.skip,
+		req.query.limit,
+		req.body,
+		next
+	)
+	//model, objectName, sortOn, skip, limit, body, next
 }
 export async function getCommentById(req, res, next){
 	await getById(Comment, 'comment', req.params.id, next)
