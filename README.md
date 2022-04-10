@@ -161,7 +161,7 @@ Replies with one user with the id given as a parameter
 Updates the user with the corresponding ID
 ```JSON
 {
-"password": "Password456*"
+"lastName": "Janssen"
 }
 ```
 
