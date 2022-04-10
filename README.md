@@ -20,7 +20,7 @@ Creates a new account and gives back login info + bearer token
 {
     *"email": "johndoe@gmail.com",
     *"firstName": "John",
-	*"lastName": "Doe"
+	*"lastName": "Doe",
     *"password": "Password123*"
 }
 ```
